@@ -2,6 +2,7 @@ package com.example.adamapbackend.domain.enums;
 
 import lombok.Getter;
 
+@Getter
 public enum TipoEspacio {
     AULA("aula"),
     SEMINARIO("seminario"),
@@ -9,7 +10,6 @@ public enum TipoEspacio {
     DESPACHO("despacho"),
     SALA_COMUN("sala_comun");
 
-    @Getter
     private final String tipoEspacio;
 
     TipoEspacio(String tipoEspacio) {

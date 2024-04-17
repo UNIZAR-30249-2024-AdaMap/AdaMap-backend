@@ -2,7 +2,10 @@ package com.example.adamapbackend.domain.enums;
 
 import lombok.Getter;
 
-public enum Rol {
+import java.io.Serializable;
+
+@Getter
+public enum Rol implements Serializable {
     ESTUDIANTE("estudiante"),
     INVESTIGADOR_CONTRATADO("investigador_contratado"),
     DOCENTE_INVESTIGADOR("docente_investigador"),
@@ -10,7 +13,6 @@ public enum Rol {
     TECNICO_LABORATORIO("tecnico_laboratorio"),
     GERENTE("gerente");
 
-    @Getter
     private final String rol;
 
     Rol(String rol) {

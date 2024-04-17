@@ -2,7 +2,9 @@ package com.example.adamapbackend.domain.enums;
 
 import lombok.Getter;
 
-public enum Departamento {
+import java.io.Serializable;
+
+public enum Departamento implements Serializable {
     //  Departamento de Informática e ingeniería de sistemas
     DIIS("diis"),
     //  Departamento de Ingeniería electrónica y comunicaciones
