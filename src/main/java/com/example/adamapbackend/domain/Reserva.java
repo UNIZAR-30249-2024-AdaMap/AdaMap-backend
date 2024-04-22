@@ -42,7 +42,7 @@ public class Reserva{
 
         espacios.forEach(espacio -> espacio.checkHorario(horaInicio, duracion, fecha));
 
-        if(espacios.stream().mapToInt(espacio -> espacio.getMaxPersonasParaReserva()).sum() < numAsistentes)
+        if(espacios.stream().mapToInt(Espacio::getMaxPersonasParaReserva).sum() < numAsistentes)
             throw new IllegalArgumentException("No se puede reservar para más personas de las que permiten los espacios");
 
 
@@ -59,55 +59,56 @@ public class Reserva{
 
 
     void checkEstudiante() {
-        if(espacios.stream().anyMatch(espacio -> !espacio.getTipoEspacio().equals(TipoEspacio.SALA_COMUN)))
+        if(espacios.stream().anyMatch(espacio -> !espacio.getTipoEspacioParaReserva().equals(TipoEspacio.SALA_COMUN)))
             throw new IllegalArgumentException("Un estudiante solo puede reservar salas comunes");
     }
 
     void checkConserje() {
-        if(espacios.stream().anyMatch(espacio -> espacio.getTipoEspacio().equals(TipoEspacio.DESPACHO)))
+        if(espacios.stream().anyMatch(espacio -> espacio.getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO)))
             throw new IllegalArgumentException("Un conserje no puede reservar despachos");
     }
 
     void checkTecnico() {
-        if(espacios.stream().anyMatch(espacio -> espacio.getTipoEspacio().equals(TipoEspacio.DESPACHO)))
+        if(espacios.stream().anyMatch(espacio -> espacio.getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO)))
             throw new IllegalArgumentException("Los técnicos de laboratorio no pueden reservas los despachos");
         checkLaboratorio();
     }
 
     void checkDocente() {
         checkLaboratorio();
+        checkDespacho();
     }
 
     void checkInvestigador() {
         checkLaboratorio();
+        checkDespacho();
     }
-
 
     void checkLaboratorio() {
         Departamento departamentoTecnico = this.persona.getDepartamento();
         this.espacios.stream()
-                .filter(espacio -> espacio.getTipoEspacio().equals(TipoEspacio.LABORATORIO))
+                .filter(espacio -> espacio.getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO))
                 .forEach(laboratorio -> {
                     if (laboratorio.getPropietarioEspacio().isEINA)
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a la EINA");
                     if (laboratorio.getPropietarioEspacio().isPersonas)
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a personas");
                     if (laboratorio.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(laboratorio.getPropietarioEspacio().propietario.get(0))))
-                    throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
+                        throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
                 });
     }
 
     void checkDespacho() {
         Departamento departamentoTecnico = this.persona.getDepartamento();
         this.espacios.stream()
-                .filter(espacio -> espacio.getTipoEspacio().equals(TipoEspacio.DESPACHO))
+                .filter(espacio -> espacio.getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO))
                 .forEach(despacho -> {
                     if (despacho.getPropietarioEspacio().isEINA)
-                        throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a la EINA");
+                        throw new IllegalArgumentException("No se puede reservar un despacho que pertenece a la EINA");
                     if (despacho.getPropietarioEspacio().isPersonas)
-                        throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a personas");
+                        throw new IllegalArgumentException("No se puede reservar un despacho que pertenece a personas");
                     if (despacho.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(despacho.getPropietarioEspacio().propietario.get(0))))
-                        throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
+                        throw new IllegalArgumentException("No se puede reservar un despacho que no pertenezca a tu departamento");
                 });
     }
 

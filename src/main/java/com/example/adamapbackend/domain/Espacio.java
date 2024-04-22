@@ -12,14 +12,13 @@ import javax.persistence.Id;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor
 public class Espacio {
     @Id
-    UUID idEspacio;
+    String idEspacio;
 
     @Enumerated(EnumType.STRING)
     TipoEspacio tipoEspacio;
@@ -93,6 +92,10 @@ public class Espacio {
             throw new IllegalArgumentException("Un despacho debe estar asignado a un departamento o varias personas personas");
 
         this.propietarioEspacio = propietarioEspacio;
+    }
+
+    public TipoEspacio getTipoEspacioParaReserva() {
+        return tipoEspacio == null ? tipoEspacioDefecto : tipoEspacio;
     }
 
     public void cambiarPorcentajeUso(Integer porcentajeUso) {
