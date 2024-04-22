@@ -5,8 +5,7 @@ import lombok.Getter;
 public enum TipoUso {
     DOCENCIA("docencia"),
     INVESTIGACION("investigacion"),
-    GESTION("gestion"),
-    OTROS("otros");
+    GESTION("gestion");
 
     @Getter
     private final String tipoUso;

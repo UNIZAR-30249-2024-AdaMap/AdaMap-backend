@@ -45,7 +45,7 @@ public class Persona {
             throw new IllegalAccessException("No se pueden tener más de 2 roles");
 
         if (this.roles.size() == 1 && this.roles.get(0).equals(Rol.GERENTE) && !rol.equals(Rol.DOCENTE_INVESTIGADOR))
-            throw new IllegalAccessException("Solo el gerente puede tener varios roles");
+            throw new IllegalAccessException("El segundo rol del gerente solo puede ser docente investigador");
 
         if (this.roles.size() == 1 && this.roles.get(0).equals(Rol.DOCENTE_INVESTIGADOR) && !rol.equals(Rol.GERENTE))
             throw new IllegalAccessException("Solo el gerente puede tener varios roles");
@@ -57,7 +57,7 @@ public class Persona {
     public void updateDepartamento(Departamento departamento) throws IllegalAccessException {
         if (this.roles.size() == 1) {
             Rol rol = this.roles.get(0);
-            if ((rol.equals(Rol.GERENTE) ||rol.equals(Rol.CONSERJE) || rol.equals(Rol.ESTUDIANTE)) && departamento != null)
+            if ((rol.equals(Rol.GERENTE) || rol.equals(Rol.CONSERJE) || rol.equals(Rol.ESTUDIANTE)) && departamento != null)
                 throw new IllegalAccessException("Los estudiantes, conserjes y gerentes que no sean docentes no pueden estar adscritos a un departamento");
             if((rol.equals(Rol.INVESTIGADOR_CONTRATADO) || rol.equals(Rol.DOCENTE_INVESTIGADOR) ||rol.equals(Rol.TECNICO_LABORATORIO)) && departamento == null)
                 throw new IllegalAccessException("Los investigadores, técnicos y docentes deben estar adscritos a un departamento");

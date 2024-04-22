@@ -55,15 +55,6 @@ public class Reserva{
                 case INVESTIGADOR_CONTRATADO -> checkInvestigador();
             }
         }
-
-
-
-
-
-
-        //pero técnicos de laboratorio, investigadores contratados y docentes-investigado
-        //solo pueden reservar laboratorios que están adscritos a su mismo departamento
-
     }
 
 
@@ -80,18 +71,17 @@ public class Reserva{
     void checkTecnico() {
         if(espacios.stream().anyMatch(espacio -> espacio.getTipoEspacio().equals(TipoEspacio.DESPACHO)))
             throw new IllegalArgumentException("Los técnicos de laboratorio no pueden reservas los despachos");
-
         checkLaboratorio();
     }
 
     void checkDocente() {
-        
         checkLaboratorio();
     }
 
     void checkInvestigador() {
         checkLaboratorio();
     }
+
 
     void checkLaboratorio() {
         Departamento departamentoTecnico = this.persona.getDepartamento();
@@ -102,7 +92,7 @@ public class Reserva{
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a la EINA");
                     if (laboratorio.getPropietarioEspacio().isPersonas)
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a personas");
-                    if (laboratorio.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(laboratorio.getPropietarioEspacio().propietario.get(0)))
+                    if (laboratorio.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(laboratorio.getPropietarioEspacio().propietario.get(0))))
                     throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
                 });
     }
@@ -116,8 +106,8 @@ public class Reserva{
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a la EINA");
                     if (despacho.getPropietarioEspacio().isPersonas)
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a personas");
-                    if (despacho.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(despacho.getPropietarioEspacio().propietario.get(0)))
-                    throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
+                    if (despacho.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(despacho.getPropietarioEspacio().propietario.get(0))))
+                        throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
                 });
     }
 
