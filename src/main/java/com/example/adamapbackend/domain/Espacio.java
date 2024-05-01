@@ -65,12 +65,8 @@ public class Espacio {
     }
 
     // SOLO GERENTE
-    public void hacerReservable() {
-        this.reservable = true;
-    }
-
-    public void hacerNoReservable() {
-        this.reservable = false;
+    public void cambiarReservabilidad() {
+        this.reservable = !this.reservable;
     }
 
     public void cambiarTipoEspacio(TipoEspacio tipoEspacio) {
