@@ -6,12 +6,7 @@ import com.example.adamapbackend.domain.enums.TipoEspacio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.example.adamapbackend.service.EspacioService;
 
 import java.util.List;
@@ -33,21 +28,34 @@ public class EspacioController {
         return espacioService.getEspacioById(id);
     }
 
-    @GetMapping("/{categoria}")
-    public List<Espacio> buscarReservaPorCategoria(@PathVariable String categoria) {
+    /*
+        @GetMapping("/{categoria}")
+        public List<Espacio> buscarReservaPorCategoria(@PathVariable String categoria) {
+            TipoEspacio tipoEspacio = TipoEspacio.of(categoria);
+            return espacioService.getEspacioByCategoria(tipoEspacio);
+        }
+
+        @GetMapping("/{ocupantes}")
+        public List<Espacio> buscarReservaPorOcupantes(@PathVariable Integer ocupantes) {
+            return espacioService.getEspaciosByOcupantes(ocupantes);
+        }
+
+        @GetMapping("/{planta}")
+        public List<Espacio> buscarReservaPorPlanta(@PathVariable Integer planta) {
+            return espacioService.getEspaciosByPlanta(planta);
+        }
+    */
+    @GetMapping("/buscar")
+    public List<Espacio> buscarEspacios(
+            @RequestParam(required = false) Integer planta,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Integer ocupantes) {
+
         TipoEspacio tipoEspacio = TipoEspacio.of(categoria);
-        return espacioService.getEspacioByCategoria(tipoEspacio);
+
+        return espacioService.getEspacios(planta, tipoEspacio, ocupantes);
     }
 
-    @GetMapping("/{ocupantes}")
-    public List<Espacio> buscarReservaPorOcupantes(@PathVariable Integer ocupantes) {
-        return espacioService.getEspaciosByOcupantes(ocupantes);
-    }
-
-    @GetMapping("/{planta}")
-    public List<Espacio> buscarReservaPorPlanta(@PathVariable Integer planta) {
-        return espacioService.getEspaciosByPlanta(planta);
-    }
 
     @PutMapping("/edit/{id}/reservabilidad")
     public ResponseEntity<Espacio> cambiarReservabilidad(@PathVariable String id) {
