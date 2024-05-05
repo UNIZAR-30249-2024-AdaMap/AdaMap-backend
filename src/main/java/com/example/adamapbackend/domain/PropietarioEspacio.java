@@ -27,7 +27,7 @@ public class PropietarioEspacio {
         isDepartamento = true;
     }
 
-    public PropietarioEspacio(List<Persona> personas) throws IllegalAccessException {
+    public PropietarioEspacio(List<Persona> personas) {
 
         List<Persona> personasConRolInvestigadorODocente = personas.stream()
                 .filter(persona ->
@@ -37,7 +37,7 @@ public class PropietarioEspacio {
                 .toList();
 
         if (personasConRolInvestigadorODocente.isEmpty() || personasConRolInvestigadorODocente.size() != personas.size())
-            throw new IllegalAccessException("Las personas deben tener como rol investigador o docente");
+            throw new IllegalArgumentException("Las personas deben tener como rol investigador o docente");
 
         propietario = personas.stream().map(Persona::getCorreo).toList();
         isPersonas = true;

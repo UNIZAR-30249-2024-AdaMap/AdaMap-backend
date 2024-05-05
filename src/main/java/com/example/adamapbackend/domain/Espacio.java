@@ -41,7 +41,7 @@ public class Espacio {
     PropietarioEspacio propietarioEspacio;
 
 
-    public Espacio(TipoEspacio tipoEspacio, Integer numMaxPersonas, Boolean reservable, Double tamano, Horario horario, PropietarioEspacio propietarioEspacio, Integer porcentajeUso) throws IllegalAccessException {
+    public Espacio(TipoEspacio tipoEspacio, Integer numMaxPersonas, Boolean reservable, Double tamano, Horario horario, PropietarioEspacio propietarioEspacio, Integer porcentajeUso) {
         if (tipoEspacio == null)
             throw new IllegalArgumentException("Un espacio debe tener un tipo");
 
@@ -77,7 +77,7 @@ public class Espacio {
         this.horario = horario;
     }
 
-    public void updatePropietario(PropietarioEspacio propietarioEspacio) throws IllegalAccessException {
+    public void updatePropietario(PropietarioEspacio propietarioEspacio) {
         if ((this.tipoEspacioDefecto.equals(TipoEspacio.AULA) || this.tipoEspacioDefecto.equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA)
             throw new IllegalArgumentException("Una aula o sala común debe estar asignada a la EINA");
 
@@ -124,5 +124,9 @@ public class Espacio {
 
         if(finReserva.isAfter(finEspacio))
             throw new IllegalArgumentException("No se puede reservar más tiempo del horario del espacio");
+    }
+
+    public Integer getPlanta(){
+        return null;
     }
 }

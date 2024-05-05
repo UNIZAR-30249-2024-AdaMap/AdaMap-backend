@@ -35,7 +35,7 @@ public class Reserva{
     @ManyToOne
     Persona persona;
 
-    public Reserva(List<Espacio> espacios, Integer numAsistentes, String descripcion, Date fecha, Integer duracion, String horaInicio, TipoUso tipoUso, Persona persona) throws IllegalAccessException {
+    public Reserva(List<Espacio> espacios, Integer numAsistentes, String descripcion, Date fecha, Integer duracion, String horaInicio, TipoUso tipoUso, Persona persona) {
 
         if (espacios.isEmpty())
             throw new IllegalArgumentException("Una reserva debe tener uno o más espacios");

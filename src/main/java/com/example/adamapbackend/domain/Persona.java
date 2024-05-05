@@ -26,12 +26,12 @@ public class Persona {
     @ElementCollection(targetClass = Rol.class)
     List<Rol> roles;
 
-    public Persona(String correo, String nombre, Departamento departamento, List<Rol> roles) throws IllegalAccessException {
+    public Persona(String correo, String nombre, Departamento departamento, List<Rol> roles) {
         this.correo = correo;
         this.nombre = nombre;
 
         if(roles.isEmpty())
-            throw new IllegalAccessException("Una persona debe tener un rol");
+            throw new IllegalArgumentException("Una persona debe tener un rol");
 
         for (Rol rol : roles) {
             addRol(rol);
@@ -40,31 +40,31 @@ public class Persona {
         updateDepartamento(departamento);
     }
 
-    public void addRol(Rol rol) throws IllegalAccessException {
+    public void addRol(Rol rol) {
         if (this.roles.size() > 1)
-            throw new IllegalAccessException("No se pueden tener más de 2 roles");
+            throw new IllegalArgumentException("No se pueden tener más de 2 roles");
 
         if (this.roles.size() == 1 && this.roles.get(0).equals(Rol.GERENTE) && !rol.equals(Rol.DOCENTE_INVESTIGADOR))
-            throw new IllegalAccessException("El segundo rol del gerente solo puede ser docente investigador");
+            throw new IllegalArgumentException("El segundo rol del gerente solo puede ser docente investigador");
 
         if (this.roles.size() == 1 && this.roles.get(0).equals(Rol.DOCENTE_INVESTIGADOR) && !rol.equals(Rol.GERENTE))
-            throw new IllegalAccessException("Solo el gerente puede tener varios roles");
+            throw new IllegalArgumentException("Solo el gerente puede tener varios roles");
 
         this.roles.add(rol);
     }
 
 
-    public void updateDepartamento(Departamento departamento) throws IllegalAccessException {
+    public void updateDepartamento(Departamento departamento) {
         if (this.roles.size() == 1) {
             Rol rol = this.roles.get(0);
             if ((rol.equals(Rol.GERENTE) || rol.equals(Rol.CONSERJE) || rol.equals(Rol.ESTUDIANTE)) && departamento != null)
-                throw new IllegalAccessException("Los estudiantes, conserjes y gerentes que no sean docentes no pueden estar adscritos a un departamento");
+                throw new IllegalArgumentException("Los estudiantes, conserjes y gerentes que no sean docentes no pueden estar adscritos a un departamento");
             if((rol.equals(Rol.INVESTIGADOR_CONTRATADO) || rol.equals(Rol.DOCENTE_INVESTIGADOR) ||rol.equals(Rol.TECNICO_LABORATORIO)) && departamento == null)
-                throw new IllegalAccessException("Los investigadores, técnicos y docentes deben estar adscritos a un departamento");
+                throw new IllegalArgumentException("Los investigadores, técnicos y docentes deben estar adscritos a un departamento");
         }
         else {
             if (departamento != null)
-                throw new IllegalAccessException("Un gerente que sea docente debe estar adscrito a un departamento");
+                throw new IllegalArgumentException("Un gerente que sea docente debe estar adscrito a un departamento");
         }
     }
 }
