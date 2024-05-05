@@ -58,7 +58,7 @@ public class EspacioService {
         if (numMaxOcupantes != null) {
             if(espacios != null){
                 //si ya habia filtros, se aplican más
-                espacios.stream().filter(espacio -> espacio.getNumMaxPersonas() >= numMaxOcupantes).toList()
+                espacios.stream().filter(espacio -> espacio.getNumMaxPersonas() >= numMaxOcupantes).toList();
             }else{
                 //si no hay filtros, aplico la primera vez filtro
                 espacios = espacioRepository.findAll().stream().filter(espacio -> espacio.getNumMaxPersonas() >= numMaxOcupantes).toList();
