@@ -1,22 +1,21 @@
 package com.example.adamapbackend.controller;
 
 import com.example.adamapbackend.domain.Espacio;
-import com.example.adamapbackend.domain.Horario;
 import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.Reserva;
-import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.domain.enums.TipoUso;
 import com.example.adamapbackend.service.EspacioService;
+import com.example.adamapbackend.service.PersonaService;
 import com.example.adamapbackend.service.ReservaService;
+import com.example.adamapbackend.token.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -29,10 +28,14 @@ import java.util.UUID;
 public class ReservaController {
     private final ReservaService reservaService;
     private final EspacioService espacioService;
+    private final PersonaService personaService;
+    private final TokenParser tokenParser;
     @Autowired
-    public ReservaController(ReservaService reservaService, EspacioService espacioService) {
+    public ReservaController(ReservaService reservaService, EspacioService espacioService, TokenParser tokenParser, PersonaService personaService) {
         this.reservaService = reservaService;
         this.espacioService = espacioService;
+        this.tokenParser = tokenParser;
+        this.personaService = personaService;
     }
 
     @GetMapping("/{id}")
@@ -48,7 +51,8 @@ public class ReservaController {
             @RequestBody String horaInicio,
             @RequestBody Integer duracion,
             @RequestBody String descripcion,
-            @RequestBody Date fecha
+            @RequestBody Date fecha,
+            @RequestHeader("Authorization") String tokenHeader
     ) {
 
         if (espacios.isEmpty() || tipoUso == null || numAsistentes == null || horaInicio == null || duracion == null || fecha == null) {
@@ -64,9 +68,16 @@ public class ReservaController {
 
         reservaService.checkEspacios(espaciosList, fecha, horaInicio, duracion);
 
-        //TODO: RECOGER PERSONA DE LA BBDD
+        //  RECOGER PERSONA DE LA BBDD
+        String jwtToken = tokenHeader.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
 
-        Reserva reserva = new Reserva(espaciosList, numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, new Persona());
+        Optional<Persona> persona = personaService.getPersonaById(email);
+
+        if (persona.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        Reserva reserva = new Reserva(espaciosList, numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, persona.get());
 
         //TODO: GUARDAR EN BBDD JAJAJAJAJAJAJAJAJAJA
 
@@ -75,15 +86,37 @@ public class ReservaController {
 
 
     @GetMapping("/reservasVivas")
-    public ResponseEntity<List<Reserva>> verReservasVivas() {
-        //TODO: RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
+    public ResponseEntity<List<Reserva>> verReservasVivas(@RequestHeader("Authorization") String tokenHeader) {
+        //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
+        String jwtToken = tokenHeader.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
+
+        Optional<Persona> admin = personaService.getPersonaById(email);
+
+        if (admin.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        if (!admin.get().isAdmin())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         List<Reserva> reservasVivasList = reservaService.reservasVivas();
         return ResponseEntity.ok(reservasVivasList);
     }
 
     @GetMapping("/eliminarReserva/{id}")
-    public ResponseEntity<Reserva> eliminarReserva(@PathVariable String id) {
-        //TODO: RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
+    public ResponseEntity<Reserva> eliminarReserva(@PathVariable String id, @RequestHeader("Authorization") String tokenHeader) {
+
+        //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
+        String jwtToken = tokenHeader.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
+
+        Optional<Persona> admin = personaService.getPersonaById(email);
+
+        if (admin.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        if (!admin.get().isAdmin())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         reservaService.eliminarReserva(UUID.fromString(id));
 
         //TODO: En ese caso, la aplicación avisará al usuario que la realizó.

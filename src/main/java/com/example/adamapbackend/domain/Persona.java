@@ -67,4 +67,8 @@ public class Persona {
                 throw new IllegalArgumentException("Un gerente que sea docente debe estar adscrito a un departamento");
         }
     }
+
+    public boolean isAdmin() {
+        return roles.contains(Rol.GERENTE);
+    }
 }
