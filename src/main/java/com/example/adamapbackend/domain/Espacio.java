@@ -131,6 +131,24 @@ public class Espacio {
             throw new IllegalArgumentException("No se puede reservar más tiempo del horario del espacio");
     }
 
+    public boolean isHorarioDisponible(String horaInicio, Integer duracion, Date fecha) {
+        String horarioToCheck = horario == null ? horarioDefecto.getByDay(fecha.getDay()) : horario.getByDay(fecha.getDay());
+        String horaInicioEspacio = horarioToCheck.split("-")[0];
+        String horaFinEspacio = horarioToCheck.split("-")[1];
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        LocalTime inicioEspacio = LocalTime.parse(horaInicioEspacio, formatter);
+        LocalTime finEspacio = LocalTime.parse(horaFinEspacio, formatter);
+        LocalTime inicioReserva = LocalTime.parse(horaInicio, formatter);
+        LocalTime finReserva = inicioReserva.plusMinutes(duracion);
+
+        if (inicioReserva.isAfter(finEspacio) || inicioReserva.isBefore(inicioEspacio) || finReserva.isAfter(finEspacio))
+            return false;
+
+        return true;
+    }
+
     public Integer getPlanta(){
         return null;
     }

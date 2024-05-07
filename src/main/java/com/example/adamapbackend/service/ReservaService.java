@@ -133,7 +133,7 @@ public class ReservaService {
         List<Espacio> espaciosLibres = espacioService.getEspacios(null, null, null)
                 .stream()
                 .filter(espacio -> !espacioSet.contains(espacio) && espacio.esReservablePorElUsuario(persona)
-                            && espacio.getReservable())
+                            && espacio.getReservable() && espacio.isHorarioDisponible(horaInicio, duracion, fecha))
                 .toList();
 
         if(espaciosLibres.isEmpty())
