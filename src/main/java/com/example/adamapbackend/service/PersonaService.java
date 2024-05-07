@@ -1,8 +1,6 @@
 package com.example.adamapbackend.service;
 
-import com.example.adamapbackend.domain.Espacio;
 import com.example.adamapbackend.domain.Persona;
-import com.example.adamapbackend.domain.repositories.EspacioRepository;
 import com.example.adamapbackend.domain.repositories.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,4 +16,7 @@ public class PersonaService {
         return personaRepository.findById(id);
     }
 
+    public void guardarPersona(Persona persona) {
+        personaRepository.save(persona);
+    }
 }

@@ -45,7 +45,6 @@ public class Reserva{
         if(espacios.stream().mapToInt(Espacio::getMaxPersonasParaReserva).sum() < numAsistentes)
             throw new IllegalArgumentException("No se puede reservar para más personas de las que permiten los espacios");
 
-
         if (persona.getRoles().size() == 1) {
             switch (persona.getRoles().get(0)) {
                 case ESTUDIANTE -> checkEstudiante();
@@ -56,7 +55,6 @@ public class Reserva{
             }
         }
     }
-
 
     void checkEstudiante() {
         if(espacios.stream().anyMatch(espacio -> !espacio.getTipoEspacioParaReserva().equals(TipoEspacio.SALA_COMUN)))
@@ -110,6 +108,10 @@ public class Reserva{
                     if (despacho.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(despacho.getPropietarioEspacio().propietario.get(0))))
                         throw new IllegalArgumentException("No se puede reservar un despacho que no pertenezca a tu departamento");
                 });
+    }
+
+    public boolean checkCapacidad() {
+        return espacios.stream().mapToInt(Espacio::getMaxPersonasParaReserva).sum() < numAsistentes;
     }
 
 }

@@ -7,6 +7,7 @@ import com.example.adamapbackend.domain.PropietarioEspacio;
 import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.service.PersonaService;
+import com.example.adamapbackend.service.ReservaService;
 import com.example.adamapbackend.token.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,11 +26,13 @@ public class EspacioController {
     private final EspacioService espacioService;
     private final TokenParser tokenParser;
     private final PersonaService personaService;
+    private final ReservaService reservaService;
     @Autowired
-    public EspacioController(EspacioService espacioService, TokenParser tokenParser, PersonaService personaService) {
+    public EspacioController(EspacioService espacioService, TokenParser tokenParser, PersonaService personaService, ReservaService reservaService) {
         this.espacioService = espacioService;
         this.tokenParser = tokenParser;
         this.personaService = personaService;
+        this.reservaService = reservaService;
     }
 
     @GetMapping("/{id}")
@@ -72,7 +75,7 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.cambiarReservabilidad();
 
-        //TODO: GUARDAR EN BBDD JAJAJAJAJAJAJAJAJAJA
+        espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }
@@ -102,7 +105,7 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.cambiarTipoEspacio(tipoEspacio);
 
-        //TODO: GUARDAR EN BBDD
+        espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }
@@ -130,7 +133,7 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.cambiarHorario(horario);
 
-        //TODO: GUARDAR EN BBDD
+        espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }
@@ -158,7 +161,7 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.updatePropietario(new PropietarioEspacio());
 
-        //TODO: GUARDAR EN BBDD
+        espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }
@@ -189,7 +192,7 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.updatePropietario(new PropietarioEspacio(departamentoNuevo));
 
-        //TODO: GUARDAR EN BBDD
+        espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }
@@ -223,7 +226,7 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.updatePropietario(new PropietarioEspacio(personasList));
 
-        //TODO: GUARDAR EN BBDD
+        espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }
@@ -250,9 +253,9 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.cambiarPorcentajeUso(porcentaje);
 
-        //TODO: GUARDAR EN BBDD
+        espacioService.guardarEspacio(espacioAEditar);
 
-        //TODO: CHECK RESRVAS CUYA HORA INICIO SEA POSTERIOR A LA ACTUAL
+        reservaService.updateReservasPorPorcentajeEspacios(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);
     }

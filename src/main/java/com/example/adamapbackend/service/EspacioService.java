@@ -37,4 +37,7 @@ public class EspacioService {
         return espacios;
     }
 
+    public void guardarEspacio(Espacio espacio) {
+        espacioRepository.save(espacio);
+    }
 }

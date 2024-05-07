@@ -1,5 +1,6 @@
 package com.example.adamapbackend.domain;
 
+import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.TipoEspacio;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -104,6 +105,10 @@ public class Espacio {
         return this.numMaxPersonas * 100 / this.porcentajeUsoDefecto;
     }
 
+    public Horario getHorarioParaReserva() {
+        return horario != null ? horario : horarioDefecto;
+    }
+
     public void checkHorario(String horaInicio, Integer duracion, Date fecha) {
         String horarioToCheck = horario == null ? horarioDefecto.getByDay(fecha.getDay()) : horario.getByDay(fecha.getDay());
         String horaInicioEspacio = horarioToCheck.split("-")[0];
@@ -128,5 +133,36 @@ public class Espacio {
 
     public Integer getPlanta(){
         return null;
+    }
+
+    public boolean esReservablePorElUsuario(Persona persona) {
+        if (persona.getRoles().size() == 1) {
+            switch (persona.getRoles().get(0)) {
+                case ESTUDIANTE -> {
+                    return getTipoEspacioParaReserva().equals(TipoEspacio.SALA_COMUN);
+                }
+                case CONSERJE, TECNICO_LABORATORIO -> {
+                    return !getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO);
+                }
+                case DOCENTE_INVESTIGADOR, INVESTIGADOR_CONTRATADO -> {
+                    if (getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) {
+                        if (!getPropietarioEspacio().isDepartamento)
+                            return false;
+
+                        return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
+                    }
+
+                    if (getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO)) {
+                        if (!getPropietarioEspacio().isDepartamento)
+                            return false;
+
+                        return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
+                    }
+
+                    return true;
+                }
+            }
+        }
+        return true;
     }
 }

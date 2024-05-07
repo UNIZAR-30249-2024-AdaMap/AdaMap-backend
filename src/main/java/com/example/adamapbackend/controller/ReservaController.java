@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,14 +44,14 @@ public class ReservaController {
         return reservaService.getReservaById(UUID.fromString(id));
     }
 
-    @GetMapping("/reservar")
+    @PostMapping("/reservar")
     public ResponseEntity<Reserva> buscarEspacios(
             @RequestBody List<String> espacios,
             @RequestBody String tipoUso,
             @RequestBody Integer numAsistentes,
             @RequestBody String horaInicio,
             @RequestBody Integer duracion,
-            @RequestBody String descripcion,
+            @RequestBody (required = false) String descripcion,
             @RequestBody Date fecha,
             @RequestHeader("Authorization") String tokenHeader
     ) {
@@ -79,7 +80,7 @@ public class ReservaController {
 
         Reserva reserva = new Reserva(espaciosList, numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, persona.get());
 
-        //TODO: GUARDAR EN BBDD JAJAJAJAJAJAJAJAJAJA
+        reservaService.guardarReserva(reserva);
 
         return ResponseEntity.ok(reserva);
     }
@@ -122,5 +123,31 @@ public class ReservaController {
         //TODO: En ese caso, la aplicación avisará al usuario que la realizó.
 
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/reservarAutomatica/{numEspacios}")
+    public ResponseEntity<Reserva> reservaAutomatica(
+            @RequestBody String tipoUso,
+            @RequestBody Integer numAsistentes,
+            @RequestBody String horaInicio,
+            @RequestBody Integer duracion,
+            @RequestBody (required = false) String descripcion,
+            @RequestBody Date fecha,
+            @RequestHeader("Authorization") String tokenHeader
+    ) {
+        TipoUso tipoUsoReserva = TipoUso.of(tipoUso);
+
+        //  RECOGER PERSONA DE LA BBDD
+        String jwtToken = tokenHeader.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
+
+        Optional<Persona> persona = personaService.getPersonaById(email);
+
+        if (persona.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        Reserva reserva = reservaService.reservaAutomatica(tipoUsoReserva, numAsistentes, horaInicio, duracion, descripcion, fecha, persona.get());
+
+        return ResponseEntity.ok(reserva);
     }
 }
