@@ -1,7 +1,6 @@
 package com.example.adamapbackend.domain;
 
 import com.example.adamapbackend.domain.enums.Departamento;
-import com.example.adamapbackend.domain.enums.Rol;
 import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.domain.enums.TipoUso;
 import lombok.Getter;
@@ -87,11 +86,11 @@ public class Reserva{
         this.espacios.stream()
                 .filter(espacio -> espacio.getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO))
                 .forEach(laboratorio -> {
-                    if (laboratorio.getPropietarioEspacio().isEINA)
+                    if (laboratorio.getPropietarioEspacio().isEINA())
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a la EINA");
-                    if (laboratorio.getPropietarioEspacio().isPersonas)
+                    if (laboratorio.getPropietarioEspacio().isPersonas())
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que pertenece a personas");
-                    if (laboratorio.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(laboratorio.getPropietarioEspacio().propietario.get(0))))
+                    if (laboratorio.getPropietarioEspacio().isDepartamento() && !departamentoTecnico.equals(Departamento.of(laboratorio.getPropietarioEspacio().propietario.get(0))))
                         throw new IllegalArgumentException("No se puede reservar un laboratorio que no pertenezca a tu departamento");
                 });
     }
@@ -101,11 +100,11 @@ public class Reserva{
         this.espacios.stream()
                 .filter(espacio -> espacio.getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO))
                 .forEach(despacho -> {
-                    if (despacho.getPropietarioEspacio().isEINA)
+                    if (despacho.getPropietarioEspacio().isEINA())
                         throw new IllegalArgumentException("No se puede reservar un despacho que pertenece a la EINA");
-                    if (despacho.getPropietarioEspacio().isPersonas)
+                    if (despacho.getPropietarioEspacio().isPersonas())
                         throw new IllegalArgumentException("No se puede reservar un despacho que pertenece a personas");
-                    if (despacho.getPropietarioEspacio().isDepartamento && !departamentoTecnico.equals(Departamento.of(despacho.getPropietarioEspacio().propietario.get(0))))
+                    if (despacho.getPropietarioEspacio().isDepartamento() && !departamentoTecnico.equals(Departamento.of(despacho.getPropietarioEspacio().propietario.get(0))))
                         throw new IllegalArgumentException("No se puede reservar un despacho que no pertenezca a tu departamento");
                 });
     }

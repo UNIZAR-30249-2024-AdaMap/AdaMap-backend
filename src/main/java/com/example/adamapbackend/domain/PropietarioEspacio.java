@@ -3,6 +3,7 @@ package com.example.adamapbackend.domain;
 import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.Rol;
 import com.example.adamapbackend.domain.enums.TipoEspacio;
+import lombok.Getter;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -10,20 +11,21 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Embeddable
 public class PropietarioEspacio {
     @Transient
-    boolean isEINA;
+    private boolean isEINA;
     @Transient
-    boolean isDepartamento;
+    private boolean isDepartamento;
     @Transient
-    boolean isPersonas;
+    private boolean isPersonas;
 
     @ElementCollection(targetClass = String.class)
     List<String> propietario;
 
     public PropietarioEspacio(Departamento departamento) {
-        propietario = new ArrayList<>(List.of(departamento.getDepartamento()));
+        propietario = List.of(departamento.getDepartamento());
         isDepartamento = true;
     }
 

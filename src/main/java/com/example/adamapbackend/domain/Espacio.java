@@ -52,7 +52,7 @@ public class Espacio {
         if (porcentajeUso <= 0)
             throw new IllegalArgumentException("El porcentaje de uso del espacio debe ser mayor que cero");
 
-        if (tipoEspacio.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isPersonas && reservable)
+        if (tipoEspacio.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isPersonas() && reservable)
             throw new IllegalArgumentException("Un despacho asignado a personas no puede ser reservable");
 
         updatePropietario(propietarioEspacio);
@@ -79,13 +79,13 @@ public class Espacio {
     }
 
     public void updatePropietario(PropietarioEspacio propietarioEspacio) {
-        if ((this.tipoEspacioDefecto.equals(TipoEspacio.AULA) || this.tipoEspacioDefecto.equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA)
+        if ((this.tipoEspacioDefecto.equals(TipoEspacio.AULA) || this.tipoEspacioDefecto.equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA())
             throw new IllegalArgumentException("Una aula o sala común debe estar asignada a la EINA");
 
-        if ((this.tipoEspacioDefecto.equals(TipoEspacio.SEMINARIO) || this.tipoEspacioDefecto.equals(TipoEspacio.LABORATORIO)) && propietarioEspacio.isPersonas)
+        if ((this.tipoEspacioDefecto.equals(TipoEspacio.SEMINARIO) || this.tipoEspacioDefecto.equals(TipoEspacio.LABORATORIO)) && propietarioEspacio.isPersonas())
             throw new IllegalArgumentException("Un seminario o laboratorio debe estar asignado a la EINA");
 
-        if (this.tipoEspacioDefecto.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isEINA)
+        if (this.tipoEspacioDefecto.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isEINA())
             throw new IllegalArgumentException("Un despacho debe estar asignado a un departamento o varias personas personas");
 
         this.propietarioEspacio = propietarioEspacio;
@@ -164,14 +164,14 @@ public class Espacio {
                 }
                 case DOCENTE_INVESTIGADOR, INVESTIGADOR_CONTRATADO -> {
                     if (getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) {
-                        if (!getPropietarioEspacio().isDepartamento)
+                        if (!getPropietarioEspacio().isDepartamento())
                             return false;
 
                         return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
                     }
 
                     if (getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO)) {
-                        if (!getPropietarioEspacio().isDepartamento)
+                        if (!getPropietarioEspacio().isDepartamento())
                             return false;
 
                         return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));

@@ -1,16 +1,21 @@
 package com.example.adamapbackend.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import javax.persistence.Embeddable;
 
+@Getter
+@AllArgsConstructor
 @Embeddable
 public class Horario {
-    String horarioLunes;
-    String horarioMartes;
-    String horarioMiercoles;
-    String horarioJueves;
-    String horarioViernes;
-    String horarioSabado;
-    String horarioDomingo;
+    private String horarioLunes;
+    private String horarioMartes;
+    private String horarioMiercoles;
+    private String horarioJueves;
+    private String horarioViernes;
+    private String horarioSabado;
+    private String horarioDomingo;
 
     public String getByDay(Integer day) {
         return switch (day) {
