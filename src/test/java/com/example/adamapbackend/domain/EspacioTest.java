@@ -100,4 +100,13 @@ class EspacioTest {
                 Arguments.of(TipoEspacio.SEMINARIO, true)
         );
     }
+
+    public static Stream<Arguments> espaciosConserjeTecnico() {
+        return Stream.of(
+                Arguments.of(TipoEspacio.SALA_COMUN),
+                Arguments.of(TipoEspacio.AULA),
+                Arguments.of(TipoEspacio.LABORATORIO),
+                Arguments.of(TipoEspacio.SEMINARIO)
+        );
+    }
 }
