@@ -20,9 +20,10 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
+          distribution: temurin
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       - name: Run tests
         run: ./gradlew test
