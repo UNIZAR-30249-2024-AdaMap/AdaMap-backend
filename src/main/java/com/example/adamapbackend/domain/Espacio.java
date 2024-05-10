@@ -27,7 +27,7 @@ public class Espacio {
     TipoEspacio tipoEspacioDefecto;
 
     Integer numMaxPersonas;
-    Boolean reservable;
+    Boolean reservable = false;
     Double tamano;
     Integer porcentajeUsoDefecto;
     Integer porcentajeUso;
@@ -154,6 +154,9 @@ public class Espacio {
     }
 
     public boolean esReservablePorElUsuario(Persona persona) {
+        if (!reservable)
+            return false;
+
         if (persona.getRoles().size() == 1) {
             switch (persona.getRoles().get(0)) {
                 case ESTUDIANTE -> {
@@ -164,17 +167,17 @@ public class Espacio {
                 }
                 case DOCENTE_INVESTIGADOR, INVESTIGADOR_CONTRATADO -> {
                     if (getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) {
-                        if (!getPropietarioEspacio().isDepartamento())
+                        if (!propietarioEspacio.isDepartamento())
                             return false;
 
-                        return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
+                        return persona.getDepartamento().equals(Departamento.of(propietarioEspacio.getPropietario().get(0)));
                     }
 
                     if (getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO)) {
-                        if (!getPropietarioEspacio().isDepartamento())
+                        if (!propietarioEspacio.isDepartamento())
                             return false;
 
-                        return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
+                        return persona.getDepartamento().equals(Departamento.of(propietarioEspacio.getPropietario().get(0)));
                     }
 
                     return true;

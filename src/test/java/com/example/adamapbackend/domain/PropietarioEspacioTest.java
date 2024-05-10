@@ -11,8 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PropietarioEspacioTest {
+    Persona persona = mock(Persona.class);
+
     @Test
     public void shouldCreateEinaAsPropietario() {
         PropietarioEspacio propietarioEspacio = new PropietarioEspacio();
@@ -35,7 +39,9 @@ class PropietarioEspacioTest {
 
     @Test
     public void shouldCreatePersonasAsPropietario() {
-        Persona persona = new Persona("investigador@unizar.es", "Investigador", Departamento.DIIS, List.of(Rol.INVESTIGADOR_CONTRATADO));
+
+        when(persona.getRoles()).thenReturn(List.of(Rol.INVESTIGADOR_CONTRATADO));
+        when(persona.getCorreo()).thenReturn("email@unizar.es");
         PropietarioEspacio propietarioEspacio = new PropietarioEspacio(List.of(persona));
 
         assertTrue(propietarioEspacio.isPersonas());
@@ -46,7 +52,7 @@ class PropietarioEspacioTest {
 
     @Test
     public void shouldThrowExceptionWhenPersonaIsNotInvestigadorODocente() {
-        Persona persona = new Persona("gerente@unizar.es", "Gerente", null, List.of(Rol.GERENTE));
+        when(persona.getRoles()).thenReturn(List.of(Rol.GERENTE));
 
         assertThrows(IllegalArgumentException.class, () -> new PropietarioEspacio(List.of(persona)));
     }
