@@ -1,7 +1,5 @@
 package com.example.adamapbackend.domain;
 
-import com.example.adamapbackend.domain.enums.Departamento;
-import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.domain.enums.TipoUso;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

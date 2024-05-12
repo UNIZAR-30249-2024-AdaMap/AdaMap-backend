@@ -2,13 +2,11 @@ package com.example.adamapbackend.domain;
 
 import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.Rol;
-import com.example.adamapbackend.domain.enums.TipoEspacio;
 import lombok.Getter;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

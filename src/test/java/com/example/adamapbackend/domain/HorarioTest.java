@@ -1,12 +1,9 @@
 package com.example.adamapbackend.domain;
 
-import com.example.adamapbackend.domain.enums.Departamento;
-import com.example.adamapbackend.domain.enums.Rol;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

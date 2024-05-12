@@ -19,27 +19,27 @@ import java.util.Date;
 @NoArgsConstructor
 public class Espacio {
     @Id
-    String idEspacio;
+    private String idEspacio;
 
     @Enumerated(EnumType.STRING)
-    TipoEspacio tipoEspacio;
+    private TipoEspacio tipoEspacio;
     @Enumerated(EnumType.STRING)
-    TipoEspacio tipoEspacioDefecto;
+    private TipoEspacio tipoEspacioDefecto;
 
-    Integer numMaxPersonas;
-    Boolean reservable = false;
-    Double tamano;
-    Integer porcentajeUsoDefecto;
-    Integer porcentajeUso;
-
-    @Embedded
-    Horario horarioDefecto;
+    private Integer numMaxPersonas;
+    private Boolean reservable = false;
+    private Double tamano;
+    private Integer porcentajeUsoDefecto;
+    private Integer porcentajeUso;
 
     @Embedded
-    Horario horario;
+    private Horario horarioDefecto;
 
     @Embedded
-    PropietarioEspacio propietarioEspacio;
+    private Horario horario;
+
+    @Embedded
+    private PropietarioEspacio propietarioEspacio;
 
 
     public Espacio(TipoEspacio tipoEspacio, Integer numMaxPersonas, Boolean reservable, Double tamano, Horario horario, PropietarioEspacio propietarioEspacio, Integer porcentajeUso) {
@@ -55,14 +55,14 @@ public class Espacio {
         if (tipoEspacio.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isPersonas() && reservable)
             throw new IllegalArgumentException("Un despacho asignado a personas no puede ser reservable");
 
-        updatePropietario(propietarioEspacio);
-
         this.tipoEspacioDefecto = tipoEspacio;
         this.numMaxPersonas = numMaxPersonas;
         this.reservable = reservable;
         this.tamano = tamano;
         this.horarioDefecto = horario;
         this.porcentajeUsoDefecto = porcentajeUso;
+
+        updatePropietario(propietarioEspacio);
     }
 
     // SOLO GERENTE
@@ -79,13 +79,13 @@ public class Espacio {
     }
 
     public void updatePropietario(PropietarioEspacio propietarioEspacio) {
-        if ((this.tipoEspacioDefecto.equals(TipoEspacio.AULA) || this.tipoEspacioDefecto.equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA())
+        if ((getTipoEspacioParaReserva().equals(TipoEspacio.AULA) || getTipoEspacioParaReserva().equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA())
             throw new IllegalArgumentException("Una aula o sala común debe estar asignada a la EINA");
 
-        if ((this.tipoEspacioDefecto.equals(TipoEspacio.SEMINARIO) || this.tipoEspacioDefecto.equals(TipoEspacio.LABORATORIO)) && propietarioEspacio.isPersonas())
+        if ((getTipoEspacioParaReserva().equals(TipoEspacio.SEMINARIO) || getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) && propietarioEspacio.isPersonas())
             throw new IllegalArgumentException("Un seminario o laboratorio debe estar asignado a la EINA");
 
-        if (this.tipoEspacioDefecto.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isEINA())
+        if (getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO) && propietarioEspacio.isEINA())
             throw new IllegalArgumentException("Un despacho debe estar asignado a un departamento o varias personas personas");
 
         this.propietarioEspacio = propietarioEspacio;
@@ -110,7 +110,7 @@ public class Espacio {
     }
 
     public void checkHorario(String horaInicio, Integer duracion, Date fecha) {
-        String horarioToCheck = horario == null ? horarioDefecto.getByDay(fecha.getDay()) : horario.getByDay(fecha.getDay());
+        String horarioToCheck = getHorarioParaReserva().getByDay(fecha.getDay());
         String horaInicioEspacio = horarioToCheck.split("-")[0];
         String horaFinEspacio = horarioToCheck.split("-")[1];
 
@@ -132,7 +132,7 @@ public class Espacio {
     }
 
     public boolean isHorarioDisponible(String horaInicio, Integer duracion, Date fecha) {
-        String horarioToCheck = horario == null ? horarioDefecto.getByDay(fecha.getDay()) : horario.getByDay(fecha.getDay());
+        String horarioToCheck = getHorarioParaReserva().getByDay(fecha.getDay());
         String horaInicioEspacio = horarioToCheck.split("-")[0];
         String horaFinEspacio = horarioToCheck.split("-")[1];
 

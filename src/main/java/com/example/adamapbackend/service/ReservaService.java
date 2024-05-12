@@ -4,7 +4,6 @@ import com.example.adamapbackend.domain.Espacio;
 import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.Reserva;
 import com.example.adamapbackend.domain.enums.TipoUso;
-import com.example.adamapbackend.domain.repositories.EspacioRepository;
 import com.example.adamapbackend.domain.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
