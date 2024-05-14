@@ -34,7 +34,6 @@ public class Espacio {
 
     @Embedded
     Horario horarioDefecto;
-
     @Embedded
     Horario horario;
 

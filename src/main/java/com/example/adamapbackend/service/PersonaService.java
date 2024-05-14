@@ -20,8 +20,4 @@ public class PersonaService {
     public void guardarPersona(Persona persona) {
         personaRepository.save(persona);
     }
-
-    public List<String> getNotificaciones(Persona persona) {
-        return persona.getNotificaciones();
-    }
 }
