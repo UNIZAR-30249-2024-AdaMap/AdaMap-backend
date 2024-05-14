@@ -33,6 +33,7 @@ public class Reserva{
     String horaInicio;
     Integer duracion;
     Date fecha;
+
     @ManyToOne
     Persona persona;
 

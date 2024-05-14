@@ -34,9 +34,27 @@ public class Espacio {
     Integer porcentajeUso;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "horarioLunes", column = @Column(name = "horarioLunesDefecto")),
+            @AttributeOverride(name = "horarioMartes", column = @Column(name = "horarioMartesDefecto")),
+            @AttributeOverride(name = "horarioMiercoles", column = @Column(name = "horarioMiercolesDefecto")),
+            @AttributeOverride(name = "horarioJueves", column = @Column(name = "horarioJuevesDefecto")),
+            @AttributeOverride(name = "horarioViernes", column = @Column(name = "horarioViernesDefecto")),
+            @AttributeOverride(name = "horarioSabado", column = @Column(name = "horarioSabadoDefecto")),
+            @AttributeOverride(name = "horarioDomingo", column = @Column(name = "horarioDomingoDefecto"))
+    })
     Horario horarioDefecto;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "horarioLunes", column = @Column(name = "horarioLunes")),
+            @AttributeOverride(name = "horarioMartes", column = @Column(name = "horarioMartes")),
+            @AttributeOverride(name = "horarioMiercoles", column = @Column(name = "horarioMiercoles")),
+            @AttributeOverride(name = "horarioJueves", column = @Column(name = "horarioJueves")),
+            @AttributeOverride(name = "horarioViernes", column = @Column(name = "horarioViernes")),
+            @AttributeOverride(name = "horarioSabado", column = @Column(name = "horarioSabado")),
+            @AttributeOverride(name = "horarioDomingo", column = @Column(name = "horarioDomingo"))
+    })
     Horario horario;
 
     @Embedded
@@ -108,10 +126,11 @@ public class Espacio {
 
     public Horario getHorarioParaReserva() {
         return horario != null ? horario : horarioDefecto;
+        //return horarioDefecto;
     }
 
     public void checkHorario(String horaInicio, Integer duracion, Date fecha) {
-        String horarioToCheck = horario == null ? horarioDefecto.getByDay(fecha.getDay()) : horario.getByDay(fecha.getDay());
+        String horarioToCheck = getHorarioParaReserva().getByDay(fecha.getDay());
         String horaInicioEspacio = horarioToCheck.split("-")[0];
         String horaFinEspacio = horarioToCheck.split("-")[1];
 
@@ -133,7 +152,7 @@ public class Espacio {
     }
 
     public boolean isHorarioDisponible(String horaInicio, Integer duracion, Date fecha) {
-        String horarioToCheck = horario == null ? horarioDefecto.getByDay(fecha.getDay()) : horario.getByDay(fecha.getDay());
+        String horarioToCheck = getHorarioParaReserva().getByDay(fecha.getDay());
         String horaInicioEspacio = horarioToCheck.split("-")[0];
         String horaFinEspacio = horarioToCheck.split("-")[1];
 
