@@ -22,6 +22,7 @@ public class Persona {
     String correo;
     String nombre;
     Departamento departamento;
+    List<String> notificaciones;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Rol.class)
@@ -72,4 +73,13 @@ public class Persona {
     public boolean isAdmin() {
         return roles.contains(Rol.GERENTE);
     }
+
+    public void addNotificacion(String notificacion) {
+        notificaciones.add(notificacion);
+    }
+
+    public void deleteNotificaciones() {
+        notificaciones.clear();
+    }
+
 }

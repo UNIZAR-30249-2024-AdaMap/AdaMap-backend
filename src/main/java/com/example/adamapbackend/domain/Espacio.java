@@ -44,7 +44,6 @@ public class Espacio {
             @AttributeOverride(name = "horarioDomingo", column = @Column(name = "horarioDomingoDefecto"))
     })
     Horario horarioDefecto;
-
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "horarioLunes", column = @Column(name = "horarioLunes")),
