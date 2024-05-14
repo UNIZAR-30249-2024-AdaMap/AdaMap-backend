@@ -11,8 +11,13 @@ import java.util.Optional;
 
 @Service
 public class EspacioService {
-    @Autowired
+    
     EspacioRepository espacioRepository;
+
+    @Autowired
+    public EspacioService(EspacioRepository espacioRepository) {
+        this.espacioRepository = espacioRepository;
+    }
 
     public Optional<Espacio> getEspacioById(String id){
         return espacioRepository.findById(id);

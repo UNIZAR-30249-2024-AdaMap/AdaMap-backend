@@ -5,11 +5,12 @@ import com.example.adamapbackend.domain.enums.TipoEspacio;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Embedded;
+/*import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.Id;*/
+import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;

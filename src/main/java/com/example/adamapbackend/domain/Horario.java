@@ -1,16 +1,25 @@
 package com.example.adamapbackend.domain;
 
-import javax.persistence.Embeddable;
+//import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Horario {
-    String horarioLunes;
-    String horarioMartes;
-    String horarioMiercoles;
-    String horarioJueves;
-    String horarioViernes;
-    String horarioSabado;
-    String horarioDomingo;
+    @Column(name = "horario_lunes", insertable = false, updatable = false)
+    private String horarioLunes;
+    @Column(name = "horario_martes", insertable = false, updatable = false)
+    private String horarioMartes;
+    @Column(name = "horario_miercoles", insertable = false, updatable = false)
+    private String horarioMiercoles;
+    @Column(name = "horario_jueves", insertable = false, updatable = false)
+    private String horarioJueves;
+    @Column(name = "horario_viernes", insertable = false, updatable = false)
+    private String horarioViernes;
+    @Column(name = "horario_sabado", insertable = false, updatable = false)
+    private String horarioSabado;
+    @Column(name = "horario_domingo", insertable = false, updatable = false)
+    private String horarioDomingo;
 
     public String getByDay(Integer day) {
         return switch (day) {

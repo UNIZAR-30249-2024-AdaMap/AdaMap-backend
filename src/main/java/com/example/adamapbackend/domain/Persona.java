@@ -5,11 +5,12 @@ import com.example.adamapbackend.domain.enums.Rol;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.ElementCollection;
+/*import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.Id;*/
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
