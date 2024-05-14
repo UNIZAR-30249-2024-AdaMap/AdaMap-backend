@@ -39,6 +39,24 @@ public class ReservaController {
         this.personaService = personaService;
     }
 
+    @GetMapping("/notificaciones")
+    public List<String> mostrarNotificaciones(@RequestHeader("Authorization") String tokenHeader) {
+
+        //  RECOGER PERSONA DE LA BBDD
+        String jwtToken = tokenHeader.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
+
+        Optional<Persona> persona = personaService.getPersonaById(email);
+
+        if (persona.isEmpty())
+            return null;
+        List<String> notificaciones = personaService.getNotificaciones(persona.get());
+        //TODO: no sé si hacerlo aqui
+        persona.get().deleteNotificaciones();
+
+        return notificaciones;
+    }
+
     @GetMapping("/{id}")
     public Optional<Reserva> buscarReservaPorId(@PathVariable String id) {
         return reservaService.getReservaById(UUID.fromString(id));
@@ -118,9 +136,12 @@ public class ReservaController {
 
         if (!admin.get().isAdmin())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        Persona personaReserva = reservaService.getReservaById(UUID.fromString(id)).get().getPersona();
         reservaService.eliminarReserva(UUID.fromString(id));
 
         //TODO: En ese caso, la aplicación avisará al usuario que la realizó.
+        personaReserva.addNotificacion("Eliminada reserva con id:" + UUID.fromString(id).toString());
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -98,8 +98,10 @@ public class ReservaService {
                 .filter(reserva -> reserva.getEspacios().contains(espacio))
                 .forEach(reserva -> {
                     if (reserva.checkCapacidad()) {
+                        Persona personaReserva = reservaRepository.findById(reserva.getIdReserva()).get().getPersona();
                         reservaRepository.deleteById(reserva.getIdReserva());
                         // TODO: INFORMAR AL USUARIO DEL BORRADO DE SU RESERVA
+                        personaReserva.addNotificacion("Eliminada reserva con id:" + reserva.getIdReserva().toString());
                     }
                 });
     }
