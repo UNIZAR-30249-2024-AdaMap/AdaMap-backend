@@ -11,8 +11,11 @@ import java.util.Optional;
 
 @Service
 public class EspacioService {
-    @Autowired
     EspacioRepository espacioRepository;
+    @Autowired
+    EspacioService(EspacioRepository espacioRepository) {
+        this.espacioRepository = espacioRepository;
+    }
 
     public Optional<Espacio> getEspacioById(String id){
         return espacioRepository.findById(id);
@@ -23,15 +26,15 @@ public class EspacioService {
         List<Espacio> espacios = espacioRepository.findAll();
 
         if(categoria != null){
-            espacios = espacios.stream().filter(espacio -> espacio.getTipoEspacioParaReserva().equals(categoria)).toList();
+            espacios = espacios.stream().filter(espacio -> categoria.equals(espacio.getTipoEspacioParaReserva())).toList();
         }
 
         if (planta != null) {
-            espacios = espacios.stream().filter(espacio -> espacio.getPlanta().equals(planta)).toList();
+            espacios = espacios.stream().filter(espacio -> planta.equals(espacio.getPlanta())).toList();
         }
 
         if (numMaxOcupantes != null) {
-            espacios = espacios.stream().filter(espacio -> espacio.getNumMaxPersonas() >= numMaxOcupantes).toList();
+            espacios = espacios.stream().filter(espacio -> espacio.getMaxPersonasParaReserva() >= numMaxOcupantes).toList();
         }
 
         return espacios;

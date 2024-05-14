@@ -40,7 +40,8 @@ public class ReservaService {
     public void checkEspacios(List<Espacio> espacios, Date fecha, String horaInicio, Integer duracion){
         Set<Espacio> espacioSet = reservaRepository.findAll().stream()
                 .filter( reserva -> {
-                    if(reserva.getFecha().after(new Date()) || reserva.getFecha().before(new Date()))
+                    if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()) ||
+                            reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(LocalDate.now()))
                         return false;
 
                     LocalTime horaInicioReserva = LocalTime.parse(reserva.getHoraInicio(), DateTimeFormatter.ofPattern("HH:mm"));
@@ -61,7 +62,9 @@ public class ReservaService {
                 //eliminar elementos repetidos
                 .collect(Collectors.toSet());
 
-        List<Espacio> espaciosYaReservados = espacios.stream().filter(espacioSet::contains).toList();
+        List<Espacio> espaciosYaReservados = espacios.stream()
+                .filter(espacio ->
+                        espacioSet.contains(espacio)).toList();
 
 
         if (!espaciosYaReservados.isEmpty()) throw new IllegalArgumentException("Uno o más espacios ya están reservados en el momento de la reserva");
@@ -70,10 +73,10 @@ public class ReservaService {
     public List<Reserva> reservasVivas() {
 
         return reservaRepository.findAll().stream().filter(reserva -> {
-            if(reserva.getFecha().after(new Date()))
+            if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()))
                 return true;
 
-            if(reserva.getFecha().before(new Date()))
+            if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(LocalDate.now()))
                 return false;
 
             LocalTime horaInicio = LocalTime.parse(reserva.getHoraInicio(), DateTimeFormatter.ofPattern("HH:mm"));
@@ -96,7 +99,7 @@ public class ReservaService {
                 })
                 .filter(reserva -> reserva.getEspacios().contains(espacio))
                 .forEach(reserva -> {
-                    if (reserva.checkCapacidad()) {
+                    if (!reserva.checkCapacidad()) {
                         reservaRepository.deleteById(reserva.getIdReserva());
                         // TODO: INFORMAR AL USUARIO DEL BORRADO DE SU RESERVA
                     }
