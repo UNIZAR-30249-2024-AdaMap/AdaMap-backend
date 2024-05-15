@@ -59,8 +59,13 @@ public class ReservaController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Reserva> buscarReservaPorId(@PathVariable String id) {
-        return reservaService.getReservaById(UUID.fromString(id));
+    public ResponseEntity<Reserva> buscarReservaPorId(@PathVariable String id) {
+        Optional<Reserva> reserva = reservaService.getReservaById(UUID.fromString(id));
+
+        if (reserva.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        return ResponseEntity.ok(reserva.get());
     }
 
     @PostMapping("/reservar")
@@ -86,8 +91,6 @@ public class ReservaController {
                .map(Optional::get)
                .toList();
 
-        reservaService.checkEspacios(espaciosList, fecha, horaInicio, duracion);
-
         //  RECOGER PERSONA DE LA BBDD
         String jwtToken = tokenHeader.replace("Bearer ", "");
         String email = tokenParser.extractEmail(jwtToken);
@@ -96,6 +99,8 @@ public class ReservaController {
 
         if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        reservaService.checkEspacios(espaciosList, fecha, horaInicio, duracion, persona.get());
 
         Reserva reserva = new Reserva(espaciosList, numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, persona.get());
 
@@ -152,7 +157,7 @@ public class ReservaController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/reservarAutomatica/{numEspacios}")
+    @PostMapping("/reservarAutomatica")
     public ResponseEntity<Reserva> reservaAutomatica(
             @RequestBody String tipoUso,
             @RequestBody Integer numAsistentes,

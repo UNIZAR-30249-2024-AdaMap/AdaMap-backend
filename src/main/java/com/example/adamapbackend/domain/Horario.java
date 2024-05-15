@@ -1,24 +1,22 @@
 package com.example.adamapbackend.domain;
 
-//import javax.persistence.Embeddable;
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.Embeddable;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Embeddable
 public class Horario {
-    @Column(name = "horario_lunes")
     private String horarioLunes;
-    @Column(name = "horario_martes")
     private String horarioMartes;
-    @Column(name = "horario_miercoles")
     private String horarioMiercoles;
-    @Column(name = "horario_jueves")
     private String horarioJueves;
-    @Column(name = "horario_viernes")
     private String horarioViernes;
-    @Column(name = "horario_sabado")
     private String horarioSabado;
-    @Column(name = "horario_domingo")
     private String horarioDomingo;
 
     public String getByDay(Integer day) {

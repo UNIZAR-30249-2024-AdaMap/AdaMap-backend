@@ -5,11 +5,6 @@ import com.example.adamapbackend.domain.enums.TipoEspacio;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/*import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;*/
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -20,18 +15,18 @@ import java.util.Date;
 @NoArgsConstructor
 public class Espacio {
     @Id
-    String idEspacio;
+    private String idEspacio;
 
     @Enumerated(EnumType.STRING)
-    TipoEspacio tipoEspacio;
+    private TipoEspacio tipoEspacio;
     @Enumerated(EnumType.STRING)
-    TipoEspacio tipoEspacioDefecto;
+    private TipoEspacio tipoEspacioDefecto;
 
-    Integer numMaxPersonas;
-    Boolean reservable;
-    Double tamano;
-    Integer porcentajeUsoDefecto;
-    Integer porcentajeUso;
+    private Integer numMaxPersonas;
+    private Boolean reservable = false;
+    private Double tamano;
+    private Integer porcentajeUsoDefecto;
+    private Integer porcentajeUso;
 
     @Embedded
     @AttributeOverrides({
@@ -70,10 +65,8 @@ public class Espacio {
         if (porcentajeUso <= 0)
             throw new IllegalArgumentException("El porcentaje de uso del espacio debe ser mayor que cero");
 
-        if (tipoEspacio.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isPersonas && reservable)
+        if (tipoEspacio.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isPersonas() && reservable)
             throw new IllegalArgumentException("Un despacho asignado a personas no puede ser reservable");
-
-        updatePropietario(propietarioEspacio);
 
         this.tipoEspacioDefecto = tipoEspacio;
         this.numMaxPersonas = numMaxPersonas;
@@ -81,6 +74,8 @@ public class Espacio {
         this.tamano = tamano;
         this.horarioDefecto = horario;
         this.porcentajeUsoDefecto = porcentajeUso;
+
+        updatePropietario(propietarioEspacio);
     }
 
     // SOLO GERENTE
@@ -97,13 +92,13 @@ public class Espacio {
     }
 
     public void updatePropietario(PropietarioEspacio propietarioEspacio) {
-        if ((this.tipoEspacioDefecto.equals(TipoEspacio.AULA) || this.tipoEspacioDefecto.equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA)
+        if ((getTipoEspacioParaReserva().equals(TipoEspacio.AULA) || getTipoEspacioParaReserva().equals(TipoEspacio.SALA_COMUN)) && !propietarioEspacio.isEINA())
             throw new IllegalArgumentException("Una aula o sala común debe estar asignada a la EINA");
 
-        if ((this.tipoEspacioDefecto.equals(TipoEspacio.SEMINARIO) || this.tipoEspacioDefecto.equals(TipoEspacio.LABORATORIO)) && propietarioEspacio.isPersonas)
+        if ((getTipoEspacioParaReserva().equals(TipoEspacio.SEMINARIO) || getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) && propietarioEspacio.isPersonas())
             throw new IllegalArgumentException("Un seminario o laboratorio debe estar asignado a la EINA");
 
-        if (this.tipoEspacioDefecto.equals(TipoEspacio.DESPACHO) && propietarioEspacio.isEINA)
+        if (getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO) && propietarioEspacio.isEINA())
             throw new IllegalArgumentException("Un despacho debe estar asignado a un departamento o varias personas personas");
 
         this.propietarioEspacio = propietarioEspacio;
@@ -125,7 +120,6 @@ public class Espacio {
 
     public Horario getHorarioParaReserva() {
         return horario != null ? horario : horarioDefecto;
-        //return horarioDefecto;
     }
 
     public void checkHorario(String horaInicio, Integer duracion, Date fecha) {
@@ -173,6 +167,9 @@ public class Espacio {
     }
 
     public boolean esReservablePorElUsuario(Persona persona) {
+        if (!reservable)
+            return false;
+
         if (persona.getRoles().size() == 1) {
             switch (persona.getRoles().get(0)) {
                 case ESTUDIANTE -> {
@@ -183,17 +180,17 @@ public class Espacio {
                 }
                 case DOCENTE_INVESTIGADOR, INVESTIGADOR_CONTRATADO -> {
                     if (getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) {
-                        if (!getPropietarioEspacio().isDepartamento)
+                        if (!propietarioEspacio.isDepartamento())
                             return false;
 
-                        return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
+                        return persona.getDepartamento().equals(Departamento.of(propietarioEspacio.getPropietario().get(0)));
                     }
 
                     if (getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO)) {
-                        if (!getPropietarioEspacio().isDepartamento)
+                        if (!propietarioEspacio.isDepartamento())
                             return false;
 
-                        return persona.getDepartamento().equals(Departamento.of(getPropietarioEspacio().propietario.get(0)));
+                        return persona.getDepartamento().equals(Departamento.of(propietarioEspacio.getPropietario().get(0)));
                     }
 
                     return true;

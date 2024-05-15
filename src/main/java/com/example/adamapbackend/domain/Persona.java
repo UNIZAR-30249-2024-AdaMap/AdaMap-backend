@@ -5,12 +5,10 @@ import com.example.adamapbackend.domain.enums.Rol;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/*import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;*/
+
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,20 +17,21 @@ import java.util.List;
 public class Persona {
 
     @Id
-    String correo;
-    String nombre;
-    Departamento departamento;
-    List<String> notificaciones;
+    private String correo;
+    private String nombre;
+    private Departamento departamento;
+    @ElementCollection(targetClass = String.class)
+    private List<String> notificaciones;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Rol.class)
-    List<Rol> roles;
+    private List<Rol> roles = new ArrayList<>();
 
     public Persona(String correo, String nombre, Departamento departamento, List<Rol> roles) {
         this.correo = correo;
         this.nombre = nombre;
 
-        if(roles.isEmpty())
+        if(roles == null || roles.isEmpty())
             throw new IllegalArgumentException("Una persona debe tener un rol");
 
         for (Rol rol : roles) {
@@ -50,13 +49,16 @@ public class Persona {
             throw new IllegalArgumentException("El segundo rol del gerente solo puede ser docente investigador");
 
         if (this.roles.size() == 1 && this.roles.get(0).equals(Rol.DOCENTE_INVESTIGADOR) && !rol.equals(Rol.GERENTE))
-            throw new IllegalArgumentException("Solo el gerente puede tener varios roles");
+            throw new IllegalArgumentException("El segundo rol del docente investigador solo puede ser gerente");
+
+        if (this.roles.size() == 1 && !this.roles.get(0).equals(Rol.DOCENTE_INVESTIGADOR) && !this.roles.get(0).equals(Rol.GERENTE))
+            throw new IllegalArgumentException("Solo el gerente y el docente investigador pueden tener varios roles");
 
         this.roles.add(rol);
     }
 
 
-    public void updateDepartamento(Departamento departamento) {
+    public void checkDepartamento(Departamento departamento) {
         if (this.roles.size() == 1) {
             Rol rol = this.roles.get(0);
             if ((rol.equals(Rol.GERENTE) || rol.equals(Rol.CONSERJE) || rol.equals(Rol.ESTUDIANTE)) && departamento != null)
@@ -65,9 +67,14 @@ public class Persona {
                 throw new IllegalArgumentException("Los investigadores, técnicos y docentes deben estar adscritos a un departamento");
         }
         else {
-            if (departamento != null)
+            if (departamento == null)
                 throw new IllegalArgumentException("Un gerente que sea docente debe estar adscrito a un departamento");
         }
+    }
+
+    public void updateDepartamento(Departamento departamento) {
+        this.departamento = departamento;
+        checkDepartamento(departamento);
     }
 
     public boolean isAdmin() {

@@ -4,11 +4,8 @@ import com.example.adamapbackend.domain.Espacio;
 import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.Reserva;
 import com.example.adamapbackend.domain.enums.TipoUso;
-import com.example.adamapbackend.domain.repositories.EspacioRepository;
 import com.example.adamapbackend.domain.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -42,10 +39,11 @@ public class ReservaService {
         return reservaRepository.findById(id);
     }
 
-    public void checkEspacios(List<Espacio> espacios, Date fecha, String horaInicio, Integer duracion){
+    public void checkEspacios(List<Espacio> espacios, Date fecha, String horaInicio, Integer duracion, Persona persona){
         Set<Espacio> espacioSet = reservaRepository.findAll().stream()
                 .filter( reserva -> {
-                    if(reserva.getFecha().after(new Date()) || reserva.getFecha().before(new Date()))
+                    if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()) ||
+                            reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(LocalDate.now()))
                         return false;
 
                     LocalTime horaInicioReserva = LocalTime.parse(reserva.getHoraInicio(), DateTimeFormatter.ofPattern("HH:mm"));
@@ -66,19 +64,22 @@ public class ReservaService {
                 //eliminar elementos repetidos
                 .collect(Collectors.toSet());
 
-        List<Espacio> espaciosYaReservados = espacios.stream().filter(espacioSet::contains).toList();
+        List<Espacio> espaciosYaReservados = espacios.stream()
+                .filter(espacio -> espacioSet.contains(espacio) || !espacio.esReservablePorElUsuario(persona)
+                        || !espacio.isHorarioDisponible(horaInicio, duracion, fecha))
+                .toList();
 
 
-        if (!espaciosYaReservados.isEmpty()) throw new IllegalArgumentException("Uno o más espacios ya están reservados en el momento de la reserva");
+        if (!espaciosYaReservados.isEmpty()) throw new IllegalArgumentException("Uno o más espacios no están disponibles en el momento de la reserva");
     }
 
     public List<Reserva> reservasVivas() {
 
         return reservaRepository.findAll().stream().filter(reserva -> {
-            if(reserva.getFecha().after(new Date()))
+            if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()))
                 return true;
 
-            if(reserva.getFecha().before(new Date()))
+            if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(LocalDate.now()))
                 return false;
 
             LocalTime horaInicio = LocalTime.parse(reserva.getHoraInicio(), DateTimeFormatter.ofPattern("HH:mm"));
@@ -101,7 +102,7 @@ public class ReservaService {
                 })
                 .filter(reserva -> reserva.getEspacios().contains(espacio))
                 .forEach(reserva -> {
-                    if (reserva.checkCapacidad()) {
+                    if (!reserva.checkCapacidad()) {
 
                         Optional<Reserva> reservaABorrar = reservaRepository.findById(reserva.getIdReserva());
 
@@ -148,7 +149,7 @@ public class ReservaService {
         List<Espacio> espaciosLibres = espacioService.getEspacios(null, null, null)
                 .stream()
                 .filter(espacio -> !espacioSet.contains(espacio) && espacio.esReservablePorElUsuario(persona)
-                            && espacio.getReservable() && espacio.isHorarioDisponible(horaInicio, duracion, fecha))
+                        && espacio.isHorarioDisponible(horaInicio, duracion, fecha))
                 .toList();
 
         if(espaciosLibres.isEmpty())
@@ -170,6 +171,5 @@ public class ReservaService {
         }
 
         return new Reserva(List.of(espacioParaReserva.get()), numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, persona);
-
     }
 }

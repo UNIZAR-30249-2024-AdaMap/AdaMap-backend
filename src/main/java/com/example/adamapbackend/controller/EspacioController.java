@@ -36,19 +36,24 @@ public class EspacioController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Espacio> buscarReservaPorId(@PathVariable String id) {
-        return espacioService.getEspacioById(id);
+    public ResponseEntity<Espacio> buscarEspacioPorId(@PathVariable String id) {
+        Optional<Espacio> espacio = espacioService.getEspacioById(id);
+
+        if (espacio.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        return ResponseEntity.ok(espacio.get());
     }
 
     @GetMapping("/buscar")
-    public List<Espacio> buscarEspacios(
+    public ResponseEntity<List<Espacio>> buscarEspacios(
             @RequestParam(required = false) Integer planta,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) Integer ocupantes) {
 
         TipoEspacio tipoEspacio = TipoEspacio.of(categoria);
 
-        return espacioService.getEspacios(planta, tipoEspacio, ocupantes);
+        return ResponseEntity.ok(espacioService.getEspacios(planta, tipoEspacio, ocupantes));
     }
 
 
@@ -127,7 +132,7 @@ public class EspacioController {
 
         Optional<Espacio> espacio = espacioService.getEspacioById(id);
 
-        if (espacio.isEmpty() || horario == null)
+        if (espacio.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Espacio espacioAEditar = espacio.get();
@@ -166,37 +171,6 @@ public class EspacioController {
         return ResponseEntity.ok(espacioAEditar);
     }
 
-    @PutMapping("/edit/{id}/propietario/departamento/{departamento}")
-    public ResponseEntity<Espacio> cambiarPropietarioDepartamento(@PathVariable String id, @PathVariable String departamento, @RequestHeader("Authorization") String tokenHeader) {
-
-        //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
-
-        Optional<Persona> admin = personaService.getPersonaById(email);
-
-        if (admin.isEmpty())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
-        if (!admin.get().isAdmin())
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        Departamento departamentoNuevo = Departamento.of(departamento);
-
-
-        Optional<Espacio> espacio = espacioService.getEspacioById(id);
-
-        if (espacio.isEmpty() || departamentoNuevo == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
-        Espacio espacioAEditar = espacio.get();
-        espacioAEditar.updatePropietario(new PropietarioEspacio(departamentoNuevo));
-
-        espacioService.guardarEspacio(espacioAEditar);
-
-        return ResponseEntity.ok(espacioAEditar);
-    }
-
     @PutMapping("/edit/{id}/propietario/personas")
     public ResponseEntity<Espacio> cambiarPropietarioPersonas(@PathVariable String id, @RequestBody List<String> personas, @RequestHeader("Authorization") String tokenHeader) {
 
@@ -225,6 +199,37 @@ public class EspacioController {
 
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.updatePropietario(new PropietarioEspacio(personasList));
+
+        espacioService.guardarEspacio(espacioAEditar);
+
+        return ResponseEntity.ok(espacioAEditar);
+    }
+
+    @PutMapping("/edit/{id}/propietario/departamento/{departamento}")
+    public ResponseEntity<Espacio> cambiarPropietarioDepartamento(@PathVariable String id, @PathVariable String departamento, @RequestHeader("Authorization") String tokenHeader) {
+
+        //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
+        String jwtToken = tokenHeader.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
+
+        Optional<Persona> admin = personaService.getPersonaById(email);
+
+        if (admin.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        if (!admin.get().isAdmin())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        Departamento departamentoNuevo = Departamento.of(departamento);
+
+
+        Optional<Espacio> espacio = espacioService.getEspacioById(id);
+
+        if (espacio.isEmpty() || departamentoNuevo == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        Espacio espacioAEditar = espacio.get();
+        espacioAEditar.updatePropietario(new PropietarioEspacio(departamentoNuevo));
 
         espacioService.guardarEspacio(espacioAEditar);
 

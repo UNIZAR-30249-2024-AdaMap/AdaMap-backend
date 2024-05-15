@@ -35,13 +35,13 @@ public class PersonaController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestParam String correo) {
+        public ResponseEntity<String> loginUser(@RequestParam String correo) {
         Optional<Persona> persona = personaService.getPersonaById(correo);
 
         if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        return ResponseEntity.ok(persona.get().getCorreo());
+        return ResponseEntity.ok(tokenParser.generateToken(persona.get().getCorreo()));
     }
 
     @PutMapping("/edit/{correo}/rol/{rol}")
