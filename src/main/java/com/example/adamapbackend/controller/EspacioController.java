@@ -36,19 +36,24 @@ public class EspacioController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Espacio> buscarReservaPorId(@PathVariable String id) {
-        return espacioService.getEspacioById(id);
+    public ResponseEntity<Espacio> buscarEspacioPorId(@PathVariable String id) {
+        Optional<Espacio> espacio = espacioService.getEspacioById(id);
+
+        if (espacio.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        return ResponseEntity.ok(espacio.get());
     }
 
     @GetMapping("/buscar")
-    public List<Espacio> buscarEspacios(
+    public ResponseEntity<List<Espacio>> buscarEspacios(
             @RequestParam(required = false) Integer planta,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) Integer ocupantes) {
 
         TipoEspacio tipoEspacio = TipoEspacio.of(categoria);
 
-        return espacioService.getEspacios(planta, tipoEspacio, ocupantes);
+        return ResponseEntity.ok(espacioService.getEspacios(planta, tipoEspacio, ocupantes));
     }
 
 
@@ -127,7 +132,7 @@ public class EspacioController {
 
         Optional<Espacio> espacio = espacioService.getEspacioById(id);
 
-        if (espacio.isEmpty() || horario == null)
+        if (espacio.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Espacio espacioAEditar = espacio.get();
