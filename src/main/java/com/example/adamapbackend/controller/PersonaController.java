@@ -35,7 +35,7 @@ public class PersonaController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestParam String correo) {
+        public ResponseEntity<String> loginUser(@RequestParam String correo) {
         Optional<Persona> persona = personaService.getPersonaById(correo);
 
         if (persona.isEmpty())

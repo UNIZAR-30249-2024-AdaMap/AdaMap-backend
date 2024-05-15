@@ -178,11 +178,19 @@ class ReservaControllerTest {
     @Test
     public void shouldEliminarReserva() {
         Optional adminOptional = mock(Optional.class);
+        Optional reservaOptional = mock(Optional.class);
 
         when(personaService.getPersonaById("admin")).thenReturn(adminOptional);
 
         when(adminOptional.isEmpty()).thenReturn(false);
         when(adminOptional.get()).thenReturn(persona);
+
+        when(reservaService.getReservaById(any())).thenReturn(reservaOptional);
+
+        when(reservaOptional.isEmpty()).thenReturn(false);
+        when(reservaOptional.get()).thenReturn(reserva);
+
+        when(reserva.getPersona()).thenReturn(persona);
 
         when(persona.isAdmin()).thenReturn(true);
 

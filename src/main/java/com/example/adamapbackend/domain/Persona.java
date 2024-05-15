@@ -5,11 +5,9 @@ import com.example.adamapbackend.domain.enums.Rol;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,8 @@ public class Persona {
     private String correo;
     private String nombre;
     private Departamento departamento;
+    @ElementCollection(targetClass = String.class)
+    private List<String> notificaciones;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Rol.class)
@@ -80,4 +80,13 @@ public class Persona {
     public boolean isAdmin() {
         return roles.contains(Rol.GERENTE);
     }
+
+    public void addNotificacion(String notificacion) {
+        notificaciones.add(notificacion);
+    }
+
+    public void deleteNotificaciones() {
+        notificaciones.clear();
+    }
+
 }

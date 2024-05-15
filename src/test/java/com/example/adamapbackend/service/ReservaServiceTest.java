@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -26,7 +27,8 @@ import static org.mockito.Mockito.when;
 class ReservaServiceTest {
     private static ReservaRepository reservaRepository = mock(ReservaRepository.class);
     private static EspacioService espacioService = mock(EspacioService.class);
-    private static ReservaService reservaService = new ReservaService(reservaRepository, espacioService);
+    private static PersonaService personaService = mock(PersonaService.class);
+    private static ReservaService reservaService = new ReservaService(reservaRepository, espacioService, personaService);
     private static Reserva reservaNoCoincide = mock(Reserva.class);
     private static Reserva reservaCoincide = mock(Reserva.class);
     private static Reserva reservaNoViva = mock(Reserva.class);
@@ -35,6 +37,7 @@ class ReservaServiceTest {
     private static Espacio espacioReservaCoincide = mock(Espacio.class);
     private static Espacio espacioAReservar = mock(Espacio.class);
     private static Persona persona = mock(Persona.class);
+    private static Reserva reserva = mock(Reserva.class);
 
     @Test
     public void shouldWorksWhenCheckEspacios() {
@@ -112,6 +115,16 @@ class ReservaServiceTest {
         when(reservaViva1.getIdReserva()).thenReturn(UUID.randomUUID());
 
         when(reservaRepository.findAll()).thenReturn(List.of(reservaViva1));
+
+        Optional reservaOptional = mock(Optional.class);
+
+        when(reservaService.getReservaById(any())).thenReturn(reservaOptional);
+
+        when(reservaOptional.isEmpty()).thenReturn(false);
+        when(reservaOptional.get()).thenReturn(reserva);
+
+        when(reserva.getPersona()).thenReturn(persona);
+        when(reserva.getIdReserva()).thenReturn(UUID.randomUUID());
 
         reservaService.updateReservasPorPorcentajeEspacios(espacioAReservar);
 

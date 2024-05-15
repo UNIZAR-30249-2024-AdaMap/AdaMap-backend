@@ -5,11 +5,7 @@ import com.example.adamapbackend.domain.enums.TipoEspacio;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -33,13 +29,30 @@ public class Espacio {
     private Integer porcentajeUso;
 
     @Embedded
-    private Horario horarioDefecto;
+    @AttributeOverrides({
+            @AttributeOverride(name = "horarioLunes", column = @Column(name = "horarioLunesDefecto")),
+            @AttributeOverride(name = "horarioMartes", column = @Column(name = "horarioMartesDefecto")),
+            @AttributeOverride(name = "horarioMiercoles", column = @Column(name = "horarioMiercolesDefecto")),
+            @AttributeOverride(name = "horarioJueves", column = @Column(name = "horarioJuevesDefecto")),
+            @AttributeOverride(name = "horarioViernes", column = @Column(name = "horarioViernesDefecto")),
+            @AttributeOverride(name = "horarioSabado", column = @Column(name = "horarioSabadoDefecto")),
+            @AttributeOverride(name = "horarioDomingo", column = @Column(name = "horarioDomingoDefecto"))
+    })
+    Horario horarioDefecto;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "horarioLunes", column = @Column(name = "horarioLunes")),
+            @AttributeOverride(name = "horarioMartes", column = @Column(name = "horarioMartes")),
+            @AttributeOverride(name = "horarioMiercoles", column = @Column(name = "horarioMiercoles")),
+            @AttributeOverride(name = "horarioJueves", column = @Column(name = "horarioJueves")),
+            @AttributeOverride(name = "horarioViernes", column = @Column(name = "horarioViernes")),
+            @AttributeOverride(name = "horarioSabado", column = @Column(name = "horarioSabado")),
+            @AttributeOverride(name = "horarioDomingo", column = @Column(name = "horarioDomingo"))
+    })
+    Horario horario;
 
     @Embedded
-    private Horario horario;
-
-    @Embedded
-    private PropietarioEspacio propietarioEspacio;
+    PropietarioEspacio propietarioEspacio;
 
 
     public Espacio(TipoEspacio tipoEspacio, Integer numMaxPersonas, Boolean reservable, Double tamano, Horario horario, PropietarioEspacio propietarioEspacio, Integer porcentajeUso) {

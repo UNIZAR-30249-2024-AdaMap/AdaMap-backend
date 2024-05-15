@@ -1,15 +1,14 @@
 package com.example.adamapbackend.domain;
 
+import com.example.adamapbackend.domain.enums.Departamento;
+import com.example.adamapbackend.domain.enums.Rol;
+import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.domain.enums.TipoUso;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

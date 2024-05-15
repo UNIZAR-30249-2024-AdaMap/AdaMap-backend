@@ -4,9 +4,8 @@ import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.Rol;
 import lombok.Getter;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.Transient;
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter

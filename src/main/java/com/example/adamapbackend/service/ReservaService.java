@@ -26,11 +26,13 @@ import java.util.stream.Collectors;
 public class ReservaService {
     ReservaRepository reservaRepository;
     EspacioService espacioService;
+    PersonaService personaService;
 
     @Autowired
-    ReservaService(ReservaRepository reservaRepository, EspacioService espacioService) {
+    ReservaService(ReservaRepository reservaRepository, EspacioService espacioService, PersonaService personaService) {
         this.reservaRepository = reservaRepository;
         this.espacioService = espacioService;
+        this.personaService = personaService;
     }
 
     public Optional<Reserva> getReservaById(UUID id){
@@ -101,8 +103,19 @@ public class ReservaService {
                 .filter(reserva -> reserva.getEspacios().contains(espacio))
                 .forEach(reserva -> {
                     if (!reserva.checkCapacidad()) {
-                        reservaRepository.deleteById(reserva.getIdReserva());
-                        // TODO: INFORMAR AL USUARIO DEL BORRADO DE SU RESERVA
+
+                        Optional<Reserva> reservaABorrar = reservaRepository.findById(reserva.getIdReserva());
+
+                        if (reservaABorrar.isEmpty())
+                            throw new IllegalArgumentException("Error al borrar la reserva.");
+
+                        Persona personaReserva = reservaABorrar.get().getPersona();
+                        personaReserva.addNotificacion("Eliminada reserva con id:" + reservaABorrar.get().getIdReserva().toString());
+
+                        eliminarReserva(reservaABorrar.get().getIdReserva());
+
+                        personaService.guardarPersona(personaReserva);
+
                     }
                 });
     }
