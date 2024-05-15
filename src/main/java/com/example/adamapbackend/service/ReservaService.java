@@ -37,7 +37,7 @@ public class ReservaService {
         return reservaRepository.findById(id);
     }
 
-    public void checkEspacios(List<Espacio> espacios, Date fecha, String horaInicio, Integer duracion){
+    public void checkEspacios(List<Espacio> espacios, Date fecha, String horaInicio, Integer duracion, Persona persona){
         Set<Espacio> espacioSet = reservaRepository.findAll().stream()
                 .filter( reserva -> {
                     if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()) ||
@@ -63,11 +63,12 @@ public class ReservaService {
                 .collect(Collectors.toSet());
 
         List<Espacio> espaciosYaReservados = espacios.stream()
-                .filter(espacio ->
-                        espacioSet.contains(espacio)).toList();
+                .filter(espacio -> espacioSet.contains(espacio) || !espacio.esReservablePorElUsuario(persona)
+                        || !espacio.isHorarioDisponible(horaInicio, duracion, fecha))
+                .toList();
 
 
-        if (!espaciosYaReservados.isEmpty()) throw new IllegalArgumentException("Uno o más espacios ya están reservados en el momento de la reserva");
+        if (!espaciosYaReservados.isEmpty()) throw new IllegalArgumentException("Uno o más espacios no están disponibles en el momento de la reserva");
     }
 
     public List<Reserva> reservasVivas() {
@@ -135,7 +136,7 @@ public class ReservaService {
         List<Espacio> espaciosLibres = espacioService.getEspacios(null, null, null)
                 .stream()
                 .filter(espacio -> !espacioSet.contains(espacio) && espacio.esReservablePorElUsuario(persona)
-                            && espacio.getReservable() && espacio.isHorarioDisponible(horaInicio, duracion, fecha))
+                        && espacio.isHorarioDisponible(horaInicio, duracion, fecha))
                 .toList();
 
         if(espaciosLibres.isEmpty())
@@ -157,6 +158,5 @@ public class ReservaService {
         }
 
         return new Reserva(List.of(espacioParaReserva.get()), numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, persona);
-
     }
 }

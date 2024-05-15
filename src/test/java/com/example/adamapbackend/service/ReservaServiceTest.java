@@ -1,6 +1,7 @@
 package com.example.adamapbackend.service;
 
 import com.example.adamapbackend.domain.Espacio;
+import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.Reserva;
 import com.example.adamapbackend.domain.repositories.ReservaRepository;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ class ReservaServiceTest {
     private static Reserva reservaViva2 = mock(Reserva.class);
     private static Espacio espacioReservaCoincide = mock(Espacio.class);
     private static Espacio espacioAReservar = mock(Espacio.class);
+    private static Persona persona = mock(Persona.class);
 
     @Test
     public void shouldWorksWhenCheckEspacios() {
@@ -46,9 +48,12 @@ class ReservaServiceTest {
         when(reservaCoincide.getDuracion()).thenReturn(120);
         when(reservaCoincide.getEspacios()).thenReturn(List.of(espacioReservaCoincide));
 
+        when(espacioAReservar.esReservablePorElUsuario(persona)).thenReturn(true);
+        when(espacioAReservar.isHorarioDisponible(any(), any(), any())).thenReturn(true);
+
         when(reservaRepository.findAll()).thenReturn(List.of(reservaNoCoincide, reservaCoincide));
 
-        assertDoesNotThrow(() -> reservaService.checkEspacios(List.of(espacioAReservar), new Date(), "15:00", 120));
+        assertDoesNotThrow(() -> reservaService.checkEspacios(List.of(espacioAReservar), new Date(), "15:00", 120, persona));
     }
 
     @Test
@@ -65,7 +70,7 @@ class ReservaServiceTest {
 
         when(reservaRepository.findAll()).thenReturn(List.of(reservaNoCoincide, reservaCoincide));
 
-        assertThrows(IllegalArgumentException.class, () -> reservaService.checkEspacios(List.of(espacioAReservar), new Date(), "15:00", 120));
+        assertThrows(IllegalArgumentException.class, () -> reservaService.checkEspacios(List.of(espacioAReservar), new Date(), "15:00", 120, persona));
     }
 
     @Test
@@ -127,5 +132,70 @@ class ReservaServiceTest {
         reservaService.updateReservasPorPorcentajeEspacios(espacioAReservar);
 
         verify(reservaRepository, never()).deleteById(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenReservaAutomatica() {
+        when(reservaNoCoincide.getFecha()).thenReturn(new Date());
+        when(reservaNoCoincide.getHoraInicio()).thenReturn("10:00");
+        when(reservaNoCoincide.getDuracion()).thenReturn(120);
+        when(reservaNoCoincide.getEspacios()).thenReturn(List.of(espacioAReservar));
+
+        when(reservaCoincide.getFecha()).thenReturn(new Date());
+        when(reservaCoincide.getHoraInicio()).thenReturn("16:00");
+        when(reservaCoincide.getDuracion()).thenReturn(120);
+        when(reservaCoincide.getEspacios()).thenReturn(List.of(espacioAReservar));
+
+        when(reservaRepository.findAll()).thenReturn(List.of(reservaNoCoincide, reservaCoincide));
+
+        assertThrows(IllegalArgumentException.class, () -> reservaService.reservaAutomatica(null, null, "15:00", 120, null, new Date(), null));
+    }
+
+    @Test
+    public void shouldCreateReservaAutomatica() {
+        when(reservaNoCoincide.getFecha()).thenReturn(new Date());
+        when(reservaNoCoincide.getHoraInicio()).thenReturn("10:00");
+        when(reservaNoCoincide.getDuracion()).thenReturn(120);
+        when(reservaNoCoincide.getEspacios()).thenReturn(List.of(espacioAReservar));
+
+        when(reservaCoincide.getFecha()).thenReturn(new Date());
+        when(reservaCoincide.getHoraInicio()).thenReturn("16:00");
+        when(reservaCoincide.getDuracion()).thenReturn(120);
+        when(reservaCoincide.getEspacios()).thenReturn(List.of(espacioReservaCoincide));
+
+        when(reservaRepository.findAll()).thenReturn(List.of(reservaNoCoincide, reservaCoincide));
+        when(espacioService.getEspacios(any(), any(), any())).thenReturn(List.of(espacioAReservar, espacioReservaCoincide));
+
+        when(espacioAReservar.isHorarioDisponible(any(), any(), any())).thenReturn(true);
+        when(espacioAReservar.esReservablePorElUsuario(any())).thenReturn(true);
+        when(espacioAReservar.getMaxPersonasParaReserva()).thenReturn(100);
+
+        Reserva result = reservaService.reservaAutomatica(null, 10, "15:00", 120, null, new Date(), null);
+
+        assertEquals(List.of(espacioAReservar), result.getEspacios());
+    }
+
+    @Test
+    public void shouldCreateReservaAutomaticaWithMultipleEspacios() {
+        when(reservaNoCoincide.getFecha()).thenReturn(new Date());
+        when(reservaNoCoincide.getHoraInicio()).thenReturn("10:00");
+        when(reservaNoCoincide.getDuracion()).thenReturn(120);
+        when(reservaNoCoincide.getEspacios()).thenReturn(List.of(espacioAReservar));
+
+        when(reservaCoincide.getFecha()).thenReturn(new Date());
+        when(reservaCoincide.getHoraInicio()).thenReturn("16:00");
+        when(reservaCoincide.getDuracion()).thenReturn(120);
+        when(reservaCoincide.getEspacios()).thenReturn(List.of(espacioReservaCoincide));
+
+        when(reservaRepository.findAll()).thenReturn(List.of(reservaNoCoincide, reservaCoincide));
+        when(espacioService.getEspacios(any(), any(), any())).thenReturn(List.of(espacioAReservar, espacioReservaCoincide, espacioAReservar));
+
+        when(espacioAReservar.isHorarioDisponible(any(), any(), any())).thenReturn(true);
+        when(espacioAReservar.esReservablePorElUsuario(any())).thenReturn(true);
+        when(espacioAReservar.getMaxPersonasParaReserva()).thenReturn(8);
+
+        Reserva result = reservaService.reservaAutomatica(null, 10, "15:00", 120, null, new Date(), null);
+
+        assertEquals(List.of(espacioAReservar, espacioAReservar), result.getEspacios());
     }
 }

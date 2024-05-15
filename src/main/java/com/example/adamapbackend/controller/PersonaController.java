@@ -41,7 +41,7 @@ public class PersonaController {
         if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        return ResponseEntity.ok(persona.get().getCorreo());
+        return ResponseEntity.ok(tokenParser.generateToken(persona.get().getCorreo()));
     }
 
     @PutMapping("/edit/{correo}/rol/{rol}")
