@@ -1,5 +1,7 @@
 package com.example.adamapbackend.controller;
 
+import com.example.adamapbackend.controller.dto.CreateReserva;
+import com.example.adamapbackend.controller.dto.CreateUser;
 import com.example.adamapbackend.domain.Espacio;
 import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.Reserva;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +54,7 @@ public class ReservaController {
         if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        List<String> notificaciones = persona.get().getNotificaciones();
+        List<String> notificaciones = new ArrayList<>(persona.get().getNotificaciones());
         persona.get().deleteNotificaciones();
 
         personaService.guardarPersona(persona.get());
@@ -70,22 +73,16 @@ public class ReservaController {
 
     @PostMapping("/reservar")
     public ResponseEntity<Reserva> buscarEspacios(
-            @RequestBody List<String> espacios,
-            @RequestBody String tipoUso,
-            @RequestBody Integer numAsistentes,
-            @RequestBody String horaInicio,
-            @RequestBody Integer duracion,
-            @RequestBody (required = false) String descripcion,
-            @RequestBody Date fecha,
+            @RequestBody CreateReserva createReserva,
             @RequestHeader("Authorization") String tokenHeader
     ) {
 
-        if (espacios.isEmpty() || tipoUso == null || numAsistentes == null || horaInicio == null || duracion == null || fecha == null) {
+        if (createReserva.getEspacios().isEmpty() || createReserva.getTipoUso() == null || createReserva.getNumAsistentes() == null || createReserva.getHoraInicio() == null || createReserva.getDuracion() == null || createReserva.getFecha() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        TipoUso tipoUsoReserva = TipoUso.of(tipoUso);
+        TipoUso tipoUsoReserva = TipoUso.of(createReserva.getTipoUso());
 
-        List<Espacio> espaciosList = espacios.stream()
+        List<Espacio> espaciosList = createReserva.getEspacios().stream()
                .map(espacioService::getEspacioById)
                .filter(Optional::isPresent)
                .map(Optional::get)
@@ -100,9 +97,9 @@ public class ReservaController {
         if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        reservaService.checkEspacios(espaciosList, fecha, horaInicio, duracion, persona.get());
+        reservaService.checkEspacios(espaciosList, createReserva.getFecha(), createReserva.getHoraInicio(), createReserva.getDuracion(), persona.get());
 
-        Reserva reserva = new Reserva(espaciosList, numAsistentes, descripcion, fecha, duracion, horaInicio, tipoUsoReserva, persona.get());
+        Reserva reserva = new Reserva(espaciosList, createReserva.getNumAsistentes(), createReserva.getDescripcion(), createReserva.getFecha(), createReserva.getDuracion(), createReserva.getHoraInicio(), tipoUsoReserva, persona.get());
 
         reservaService.guardarReserva(reserva);
 
