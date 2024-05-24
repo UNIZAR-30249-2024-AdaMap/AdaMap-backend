@@ -1,11 +1,15 @@
 package com.example.adamapbackend.domain;
 
 import com.example.adamapbackend.domain.enums.Departamento;
+import com.example.adamapbackend.domain.enums.Rol;
 import com.example.adamapbackend.domain.enums.TipoEspacio;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -13,7 +17,7 @@ import java.util.Date;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Espacio {
+public class Espacio implements Serializable {
     @Id
     private String idEspacio;
 
@@ -27,6 +31,8 @@ public class Espacio {
     private Double tamano;
     private Integer porcentajeUsoDefecto;
     private Integer porcentajeUso;
+    private Integer planta;
+    private String nombre;
 
     @Embedded
     @AttributeOverrides({
@@ -113,9 +119,9 @@ public class Espacio {
     }
 
     public Integer getMaxPersonasParaReserva() {
-        if (porcentajeUso != null)
-            return this.numMaxPersonas * 100 / this.porcentajeUso;
-        return this.numMaxPersonas * 100 / this.porcentajeUsoDefecto;
+        if (porcentajeUso != 0)
+            return this.numMaxPersonas * this.porcentajeUso / 100;
+        return this.numMaxPersonas * this.porcentajeUsoDefecto / 100;
     }
 
     public Horario getHorarioParaReserva() {
@@ -163,7 +169,7 @@ public class Espacio {
     }
 
     public Integer getPlanta(){
-        return null;
+        return planta;
     }
 
     public boolean esReservablePorElUsuario(Persona persona) {
@@ -176,6 +182,13 @@ public class Espacio {
                     return getTipoEspacioParaReserva().equals(TipoEspacio.SALA_COMUN);
                 }
                 case CONSERJE, TECNICO_LABORATORIO -> {
+                    if (persona.getRoles().get(0).equals(Rol.TECNICO_LABORATORIO) && getTipoEspacioParaReserva().equals(TipoEspacio.LABORATORIO)) {
+                        if (!propietarioEspacio.isDepartamento())
+                            return false;
+
+                        return persona.getDepartamento().equals(Departamento.of(propietarioEspacio.getPropietario().get(0)));
+                    }
+
                     return !getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO);
                 }
                 case DOCENTE_INVESTIGADOR, INVESTIGADOR_CONTRATADO -> {

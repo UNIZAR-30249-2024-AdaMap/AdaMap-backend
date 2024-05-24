@@ -76,11 +76,15 @@ class EspacioTest {
     @MethodSource("espaciosConserjeTecnico")
     public void shouldBeReservablePorTecnico(TipoEspacio tipoEspacio){
         when(persona.getRoles()).thenReturn(List.of(Rol.TECNICO_LABORATORIO));
+        when(persona.getDepartamento()).thenReturn(Departamento.DIIS);
         when(propietarioEspacio.isEINA()).thenReturn(true);
+        when(propietarioEspacio.isDepartamento()).thenReturn(true);
+        when(propietarioEspacio.getPropietario()).thenReturn(List.of(Departamento.DIIS.getDepartamento()));
 
         Espacio espacio = new Espacio();
         espacio.cambiarTipoEspacio(tipoEspacio);
         espacio.cambiarReservabilidad();
+        espacio.updatePropietario(propietarioEspacio);
         assertTrue(espacio.esReservablePorElUsuario(persona));
     }
 

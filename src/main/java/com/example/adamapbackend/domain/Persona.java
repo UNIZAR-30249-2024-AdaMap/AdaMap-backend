@@ -19,6 +19,7 @@ public class Persona {
     @Id
     private String correo;
     private String nombre;
+    @Enumerated(EnumType.STRING)
     private Departamento departamento;
     @ElementCollection(targetClass = String.class)
     private List<String> notificaciones;
@@ -56,6 +57,12 @@ public class Persona {
 
         this.roles.add(rol);
     }
+
+    public void updateRoles(List<Rol> rol) {
+        roles.clear();
+        rol.forEach(this::addRol);
+    }
+
 
 
     public void checkDepartamento(Departamento departamento) {

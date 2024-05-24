@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum TipoEspacio {
-    AULA("aula"),
-    SEMINARIO("seminario"),
-    LABORATORIO("laboratorio"),
-    DESPACHO("despacho"),
-    SALA_COMUN("sala_comun");
+    AULA("AULA"),
+    SEMINARIO("SEMINARIO"),
+    LABORATORIO("LABORATORIO"),
+    DESPACHO("DESPACHO"),
+    SALA_COMUN("SALA_COMUN");
 
     private final String tipoEspacio;
 

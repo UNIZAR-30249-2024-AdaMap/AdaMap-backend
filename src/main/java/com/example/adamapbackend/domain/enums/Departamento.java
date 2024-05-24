@@ -4,13 +4,13 @@ import lombok.Getter;
 
 import java.io.Serializable;
 
+@Getter
 public enum Departamento implements Serializable {
     //  Departamento de Informática e ingeniería de sistemas
-    DIIS("diis"),
+    DIIS("DIIS"),
     //  Departamento de Ingeniería electrónica y comunicaciones
-    DIEC("diec");
+    DIEC("DIEC");
 
-    @Getter
     private final String departamento;
 
     Departamento(String departamento) {

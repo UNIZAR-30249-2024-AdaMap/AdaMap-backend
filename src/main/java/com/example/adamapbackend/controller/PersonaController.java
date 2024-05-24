@@ -1,10 +1,12 @@
 package com.example.adamapbackend.controller;
 
+import com.example.adamapbackend.controller.dto.CreateUser;
 import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.Rol;
 import com.example.adamapbackend.service.PersonaService;
 import com.example.adamapbackend.token.TokenParser;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +46,21 @@ public class PersonaController {
         return ResponseEntity.ok(tokenParser.generateToken(persona.get().getCorreo()));
     }
 
-    @PutMapping("/edit/{correo}/rol/{rol}")
-    public ResponseEntity<Persona> cambiarRol(@PathVariable String correo, @PathVariable String rol, @RequestHeader("Authorization") String tokenHeader) {
+    @GetMapping
+    public ResponseEntity<Persona> getUser(@RequestHeader("Authorization") String id) {
+        String jwtToken = id.replace("Bearer ", "");
+        String email = tokenParser.extractEmail(jwtToken);
+
+        Optional<Persona> persona = personaService.getPersonaById(email);
+
+        if (persona.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        return ResponseEntity.ok(persona.get());
+    }
+
+    @PutMapping("/edit/{correo}/rol")
+    public ResponseEntity<Persona> cambiarRol(@PathVariable String correo, @RequestBody List<String> roles, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
         String jwtToken = tokenHeader.replace("Bearer ", "");
@@ -59,14 +74,14 @@ public class PersonaController {
         if (!admin.get().isAdmin())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        Rol rolNuevo = Rol.of(rol);
+        List<Rol> rolesNuevos = roles.stream().map(Rol::of).toList();
         Optional<Persona> persona = personaService.getPersonaById(correo);
 
-        if (persona.isEmpty() || rolNuevo == null)
+        if (persona.isEmpty() || rolesNuevos.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Persona personaAeditar = persona.get();
-        personaAeditar.addRol(rolNuevo);
+        personaAeditar.updateRoles(rolesNuevos);
 
         personaService.guardarPersona(personaAeditar);
 
@@ -91,7 +106,7 @@ public class PersonaController {
         Departamento departamentoNuevo = Departamento.of(departamento);
         Optional<Persona> persona = personaService.getPersonaById(correo);
 
-        if (persona.isEmpty() || departamentoNuevo == null)
+        if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Persona personaAeditar = persona.get();
@@ -104,10 +119,7 @@ public class PersonaController {
 
     @PostMapping("/create")
     public ResponseEntity<Persona> anyadirPersona(
-            @RequestBody String nombre,
-            @RequestBody String correo,
-            @RequestBody (required = false) String departamento,
-            @RequestBody List<String> roles,
+            @RequestBody CreateUser usuario,
             @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
@@ -122,11 +134,11 @@ public class PersonaController {
         if (!admin.get().isAdmin())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        Departamento departamentoNuevo = Departamento.of(departamento);
+        Departamento departamentoNuevo = Departamento.of(usuario.getDepartamento());
         
-        List<Rol> rolList = roles.stream().map(Rol::of).toList();
+        List<Rol> rolList = usuario.getRoles().stream().map(Rol::of).toList();
 
-        Persona persona = new Persona(correo, nombre, departamentoNuevo, rolList);
+        Persona persona = new Persona(usuario.getCorreo(), usuario.getNombre(), departamentoNuevo, rolList);
 
         personaService.guardarPersona(persona);
 

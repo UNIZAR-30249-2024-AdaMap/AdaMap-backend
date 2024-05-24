@@ -50,7 +50,6 @@ public class EspacioController {
             @RequestParam(required = false) Integer planta,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) Integer ocupantes) {
-
         TipoEspacio tipoEspacio = TipoEspacio.of(categoria);
 
         return ResponseEntity.ok(espacioService.getEspacios(planta, tipoEspacio, ocupantes));
@@ -164,7 +163,7 @@ public class EspacioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Espacio espacioAEditar = espacio.get();
-        espacioAEditar.updatePropietario(new PropietarioEspacio());
+        espacioAEditar.updatePropietario(new PropietarioEspacio("EINA"));
 
         espacioService.guardarEspacio(espacioAEditar);
 

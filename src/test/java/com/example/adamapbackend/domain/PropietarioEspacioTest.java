@@ -19,7 +19,7 @@ class PropietarioEspacioTest {
 
     @Test
     public void shouldCreateEinaAsPropietario() {
-        PropietarioEspacio propietarioEspacio = new PropietarioEspacio();
+        PropietarioEspacio propietarioEspacio = new PropietarioEspacio("EINA");
 
         assertTrue(propietarioEspacio.isEINA());
         assertFalse(propietarioEspacio.isPersonas());
