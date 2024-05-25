@@ -19,8 +19,9 @@ import java.util.UUID;
 @Getter
 public class Reserva{
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     UUID idReserva;
-    @OneToMany
+    @ManyToMany
     List<Espacio> espacios = new ArrayList<>();
     Integer numAsistentes;
     String descripcion;

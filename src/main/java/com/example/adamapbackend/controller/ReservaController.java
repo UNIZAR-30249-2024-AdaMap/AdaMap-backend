@@ -13,6 +13,7 @@ import com.example.adamapbackend.token.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,16 +60,6 @@ public class ReservaController {
 
         personaService.guardarPersona(persona.get());
         return ResponseEntity.ok(notificaciones);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Reserva> buscarReservaPorId(@PathVariable String id) {
-        Optional<Reserva> reserva = reservaService.getReservaById(UUID.fromString(id));
-
-        if (reserva.isEmpty())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
-        return ResponseEntity.ok(reserva.get());
     }
 
     @PostMapping("/reservar")
@@ -125,7 +116,7 @@ public class ReservaController {
         return ResponseEntity.ok(reservasVivasList);
     }
 
-    @GetMapping("/eliminarReserva/{id}")
+    @DeleteMapping("/eliminarReserva/{id}")
     public ResponseEntity<Reserva> eliminarReserva(@PathVariable String id, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
@@ -156,15 +147,10 @@ public class ReservaController {
 
     @PostMapping("/reservarAutomatica")
     public ResponseEntity<Reserva> reservaAutomatica(
-            @RequestBody String tipoUso,
-            @RequestBody Integer numAsistentes,
-            @RequestBody String horaInicio,
-            @RequestBody Integer duracion,
-            @RequestBody (required = false) String descripcion,
-            @RequestBody Date fecha,
+            @RequestBody CreateReserva createReserva,
             @RequestHeader("Authorization") String tokenHeader
     ) {
-        TipoUso tipoUsoReserva = TipoUso.of(tipoUso);
+        TipoUso tipoUsoReserva = TipoUso.of(createReserva.getTipoUso());
 
         //  RECOGER PERSONA DE LA BBDD
         String jwtToken = tokenHeader.replace("Bearer ", "");
@@ -175,8 +161,18 @@ public class ReservaController {
         if (persona.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        Reserva reserva = reservaService.reservaAutomatica(tipoUsoReserva, numAsistentes, horaInicio, duracion, descripcion, fecha, persona.get());
+        Reserva reserva = reservaService.reservaAutomatica(tipoUsoReserva, createReserva.getNumAsistentes(), createReserva.getHoraInicio(), createReserva.getDuracion(), createReserva.getDescripcion(), createReserva.getFecha(), persona.get());
 
         return ResponseEntity.ok(reserva);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Reserva> buscarReservaPorId(@PathVariable String id) {
+        Optional<Reserva> reserva = reservaService.getReservaById(UUID.fromString(id));
+
+        if (reserva.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        return ResponseEntity.ok(reserva.get());
     }
 }
