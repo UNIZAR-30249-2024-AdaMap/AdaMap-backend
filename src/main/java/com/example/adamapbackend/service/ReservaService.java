@@ -67,9 +67,14 @@ public class ReservaService {
 
         // Filtrar espacios ya reservados y no disponibles
         List<Espacio> espaciosYaReservados = espacios.stream()
-                .filter(espacio -> espacioSet.contains(espacio) || !espacio.esReservablePorElUsuario(persona)
+                .filter(espacio -> espacioSet.contains(espacio)
                         || !espacio.isHorarioDisponible(horaInicio, duracion, fecha))
-                .collect(Collectors.toList());
+                .peek(espacio -> {
+                    if (!espacio.esReservablePorElUsuario(persona)) {
+                        throw new IllegalArgumentException("Uno o más espacios no son reservables por el usuario");
+                    }
+                })
+                .toList();
 
         // Lanza una excepción si hay espacios no disponibles
         if (!espaciosYaReservados.isEmpty()) {
