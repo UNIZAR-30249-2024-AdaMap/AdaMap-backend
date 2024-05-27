@@ -478,6 +478,7 @@ class EspacioControllerTest {
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
+        when(espacio.getTipoEspacioParaReserva()).thenReturn(TipoEspacio.DESPACHO);
 
         ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer admin");
 
