@@ -191,6 +191,9 @@ public class EspacioController {
         Espacio espacioAEditar = espacio.get();
         espacioAEditar.updatePropietario(new PropietarioEspacio(personasList));
 
+        if (espacioAEditar.getTipoEspacioParaReserva().equals(TipoEspacio.DESPACHO))
+            espacioAEditar.cambiarReservabilidad();
+
         espacioService.guardarEspacio(espacioAEditar);
 
         return ResponseEntity.ok(espacioAEditar);

@@ -12,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 public class CreateUser {
-    String nombre;String correo;String departamento;
+    String nombre;
+    String correo;
+    String departamento;
     List<String> roles;
 }
