@@ -40,37 +40,41 @@ public class ReservaService {
     }
 
     public void checkEspacios(List<Espacio> espacios, Date fecha, String horaInicio, Integer duracion, Persona persona){
+        // Convertir fecha y horaInicio a LocalDate y LocalTime para manipulación
+        LocalDate fechaReserva = fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalTime horaInicioNewReserva = LocalTime.parse(horaInicio, DateTimeFormatter.ofPattern("HH:mm"));
+        LocalDateTime horarioInicioNewReserva = LocalDateTime.of(fechaReserva, horaInicioNewReserva);
+        LocalDateTime horarioFinNewReserva = horarioInicioNewReserva.plusMinutes(duracion);
+
+        // Obtener las reservas que coinciden en la fecha especificada
         Set<Espacio> espacioSet = reservaRepository.findAll().stream()
-                .filter( reserva -> {
-                    if(reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()) ||
-                            reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(LocalDate.now()))
+                .filter(reserva -> {
+                    LocalDate fechaReservaExistente = reserva.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    if (!fechaReservaExistente.equals(fechaReserva)) {
                         return false;
+                    }
 
                     LocalTime horaInicioReserva = LocalTime.parse(reserva.getHoraInicio(), DateTimeFormatter.ofPattern("HH:mm"));
-                    LocalTime horaInicioNewReserva = LocalTime.parse(horaInicio, DateTimeFormatter.ofPattern("HH:mm"));
-
-                    LocalDateTime horarioInicioReserva = LocalDateTime.of(LocalDate.now(), horaInicioReserva);
+                    LocalDateTime horarioInicioReserva = LocalDateTime.of(fechaReserva, horaInicioReserva);
                     LocalDateTime horarioFinReserva = horarioInicioReserva.plusMinutes(reserva.getDuracion());
 
-                    LocalDateTime horarioInicioNewReserva = LocalDateTime.of(LocalDate.now(), horaInicioNewReserva);
-                    LocalDateTime horarioFinNewReserva = horarioInicioNewReserva.plusMinutes(duracion);
-
-                    //true si comparte horario total o parcialmente
-                    return horarioInicioNewReserva.isBefore(horarioFinReserva) && horarioInicioNewReserva.isAfter(horarioInicioReserva) ||
-                            horarioFinNewReserva.isBefore(horarioFinReserva) && horarioFinNewReserva.isAfter(horarioInicioReserva);
+                    // Verificar si los horarios se solapan
+                    return horarioInicioNewReserva.isBefore(horarioFinReserva) && horarioFinNewReserva.isAfter(horarioInicioReserva);
                 })
                 .map(Reserva::getEspacios)
                 .flatMap(List::stream)
-                //eliminar elementos repetidos
                 .collect(Collectors.toSet());
 
+        // Filtrar espacios ya reservados y no disponibles
         List<Espacio> espaciosYaReservados = espacios.stream()
                 .filter(espacio -> espacioSet.contains(espacio) || !espacio.esReservablePorElUsuario(persona)
                         || !espacio.isHorarioDisponible(horaInicio, duracion, fecha))
-                .toList();
+                .collect(Collectors.toList());
 
-
-        if (!espaciosYaReservados.isEmpty()) throw new IllegalArgumentException("Uno o más espacios no están disponibles en el momento de la reserva");
+        // Lanza una excepción si hay espacios no disponibles
+        if (!espaciosYaReservados.isEmpty()) {
+            throw new IllegalArgumentException("Uno o más espacios no están disponibles en el momento de la reserva");
+        }
     }
 
     public List<Reserva> reservasVivas() {
