@@ -9,7 +9,6 @@ import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.service.EspacioService;
 import com.example.adamapbackend.service.PersonaService;
 import com.example.adamapbackend.service.ReservaService;
-import com.example.adamapbackend.token.TokenParser;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +27,12 @@ import static org.mockito.Mockito.when;
 
 class EspacioControllerTest {
     private final EspacioService espacioService = mock(EspacioService.class);
-    private final TokenParser tokenParser = mock(TokenParser.class);
     private final PersonaService personaService = mock(PersonaService.class);
     private final ReservaService reservaService = mock(ReservaService.class);
     private final Espacio espacio = mock(Espacio.class);
     private final Persona admin = mock(Persona.class);
     private final Persona persona = mock(Persona.class);
-    private final EspacioController espacioController = new EspacioController(espacioService, tokenParser, personaService, reservaService);
+    private final EspacioController espacioController = new EspacioController(espacioService, personaService, reservaService);
 
     @Test
     public void shouldReturnReservaWhenBuscarEspacioPorId() {
@@ -88,8 +86,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
@@ -126,7 +122,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer tokenAdmin");
 
@@ -146,7 +141,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
@@ -168,7 +162,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
@@ -206,7 +199,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer tokenAdmin");
 
@@ -226,7 +218,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
@@ -248,7 +239,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
@@ -286,7 +276,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer tokenAdmin");
 
@@ -306,7 +295,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
@@ -328,7 +316,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
@@ -366,7 +353,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer tokenAdmin");
 
@@ -386,7 +372,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
@@ -408,7 +393,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
@@ -446,7 +430,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
 
@@ -466,7 +449,6 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
@@ -492,8 +474,6 @@ class EspacioControllerTest {
         when(adminOptional.get()).thenReturn(admin);
 
         when(admin.isAdmin()).thenReturn(true);
-
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
 
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);

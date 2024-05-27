@@ -9,7 +9,6 @@ import com.example.adamapbackend.domain.enums.TipoUso;
 import com.example.adamapbackend.service.EspacioService;
 import com.example.adamapbackend.service.PersonaService;
 import com.example.adamapbackend.service.ReservaService;
-import com.example.adamapbackend.token.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +33,10 @@ public class ReservaController {
     private final ReservaService reservaService;
     private final EspacioService espacioService;
     private final PersonaService personaService;
-    private final TokenParser tokenParser;
     @Autowired
-    public ReservaController(ReservaService reservaService, EspacioService espacioService, TokenParser tokenParser, PersonaService personaService) {
+    public ReservaController(ReservaService reservaService, EspacioService espacioService, PersonaService personaService) {
         this.reservaService = reservaService;
         this.espacioService = espacioService;
-        this.tokenParser = tokenParser;
         this.personaService = personaService;
     }
 
@@ -47,8 +44,7 @@ public class ReservaController {
     public ResponseEntity<List<String>> mostrarNotificaciones(@RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> persona = personaService.getPersonaById(email);
 
@@ -56,11 +52,29 @@ public class ReservaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         List<String> notificaciones = new ArrayList<>(persona.get().getNotificaciones());
+
+        return ResponseEntity.ok(notificaciones);
+    }
+
+    @DeleteMapping("/notificaciones")
+    public ResponseEntity<List<String>> eliminarNotificaciones(@RequestHeader("Authorization") String tokenHeader) {
+
+        //  RECOGER PERSONA DE LA BBDD
+        String email = tokenHeader.replace("Bearer ", "");
+
+        Optional<Persona> persona = personaService.getPersonaById(email);
+
+        if (persona.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         persona.get().deleteNotificaciones();
 
         personaService.guardarPersona(persona.get());
-        return ResponseEntity.ok(notificaciones);
+
+        return ResponseEntity.ok().build();
     }
+
+
 
     @PostMapping("/reservar")
     public ResponseEntity<Reserva> buscarEspacios(
@@ -80,8 +94,7 @@ public class ReservaController {
                .toList();
 
         //  RECOGER PERSONA DE LA BBDD
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> persona = personaService.getPersonaById(email);
 
@@ -101,8 +114,7 @@ public class ReservaController {
     @GetMapping("/reservasVivas")
     public ResponseEntity<List<Reserva>> verReservasVivas(@RequestHeader("Authorization") String tokenHeader) {
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -120,8 +132,7 @@ public class ReservaController {
     public ResponseEntity<Reserva> eliminarReserva(@PathVariable String id, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -153,8 +164,7 @@ public class ReservaController {
         TipoUso tipoUsoReserva = TipoUso.of(createReserva.getTipoUso());
 
         //  RECOGER PERSONA DE LA BBDD
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> persona = personaService.getPersonaById(email);
 
@@ -163,6 +173,7 @@ public class ReservaController {
 
         Reserva reserva = reservaService.reservaAutomatica(tipoUsoReserva, createReserva.getNumAsistentes(), createReserva.getHoraInicio(), createReserva.getDuracion(), createReserva.getDescripcion(), createReserva.getFecha(), persona.get());
 
+        reservaService.guardarReserva(reserva);
         return ResponseEntity.ok(reserva);
     }
 

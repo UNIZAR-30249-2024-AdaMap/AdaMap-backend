@@ -23,7 +23,7 @@ public class PropietarioEspacio {
     }
 
     public boolean isPersonas() {
-        return isPersonas;
+        return !isEINA() && !isDepartamento();
     }
 
     @Transient

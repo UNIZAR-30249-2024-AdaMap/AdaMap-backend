@@ -8,7 +8,6 @@ import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.TipoEspacio;
 import com.example.adamapbackend.service.PersonaService;
 import com.example.adamapbackend.service.ReservaService;
-import com.example.adamapbackend.token.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +23,11 @@ import java.util.Optional;
 public class EspacioController {
 
     private final EspacioService espacioService;
-    private final TokenParser tokenParser;
     private final PersonaService personaService;
     private final ReservaService reservaService;
     @Autowired
-    public EspacioController(EspacioService espacioService, TokenParser tokenParser, PersonaService personaService, ReservaService reservaService) {
+    public EspacioController(EspacioService espacioService, PersonaService personaService, ReservaService reservaService) {
         this.espacioService = espacioService;
-        this.tokenParser = tokenParser;
         this.personaService = personaService;
         this.reservaService = reservaService;
     }
@@ -60,8 +57,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarReservabilidad(@PathVariable String id, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -88,8 +84,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarCategoria(@PathVariable String id, @PathVariable String categoria, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -118,8 +113,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarHorario(@PathVariable String id, @RequestBody Horario horario, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -146,8 +140,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarPropietarioENIA(@PathVariable String id, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -174,8 +167,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarPropietarioPersonas(@PathVariable String id, @RequestBody List<String> personas, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -208,8 +200,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarPropietarioDepartamento(@PathVariable String id, @PathVariable String departamento, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
@@ -239,8 +230,7 @@ public class EspacioController {
     public ResponseEntity<Espacio> cambiarPorcentajeUso(@PathVariable String id, @PathVariable Integer porcentaje, @RequestHeader("Authorization") String tokenHeader) {
 
         //  RECOGER PERSONA DE LA BBDD Y CHECK ES GERENTE
-        String jwtToken = tokenHeader.replace("Bearer ", "");
-        String email = tokenParser.extractEmail(jwtToken);
+        String email = tokenHeader.replace("Bearer ", "");
 
         Optional<Persona> admin = personaService.getPersonaById(email);
 
