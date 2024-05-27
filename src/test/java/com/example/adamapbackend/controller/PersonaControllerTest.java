@@ -1,10 +1,10 @@
 package com.example.adamapbackend.controller;
 
+import com.example.adamapbackend.controller.dto.CreateUser;
 import com.example.adamapbackend.domain.Persona;
 import com.example.adamapbackend.domain.enums.Departamento;
 import com.example.adamapbackend.domain.enums.Rol;
 import com.example.adamapbackend.service.PersonaService;
-import com.example.adamapbackend.token.TokenParser;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -25,10 +25,9 @@ import static org.mockito.Mockito.when;
 
 class PersonaControllerTest {
     private static PersonaService personaService = mock(PersonaService.class);
-    private static TokenParser tokenParser = mock(TokenParser.class);
     private static Persona persona = mock(Persona.class);
     private static Persona admin = mock(Persona.class);
-    private static PersonaController personaController = new PersonaController(personaService, tokenParser);
+    private static PersonaController personaController = new PersonaController(personaService);
 
     @Test
     public void shouldReturnCorreoWhenLogin() {
@@ -37,12 +36,11 @@ class PersonaControllerTest {
         when(personaOptional.isEmpty()).thenReturn(false);
         when(personaOptional.get()).thenReturn(persona);
         when(persona.getCorreo()).thenReturn("email");
-        when(tokenParser.generateToken(any())).thenReturn("token");
 
         ResponseEntity<String> response = personaController.loginUser("correo");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
-        assertEquals("token", response.getBody());
+        assertEquals("email", response.getBody());
     }
 
     @Test
@@ -72,14 +70,12 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Persona> response = personaController.cambiarRol("correo", Rol.CONSERJE.getRol(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarRol("correo", List.of(Rol.CONSERJE.getRol()), "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(persona, response.getBody());
 
-        verify(persona, times(1)).addRol(Rol.CONSERJE);
+        verify(persona, times(1)).updateRoles(List.of(Rol.CONSERJE));
     }
 
     @Test
@@ -90,7 +86,7 @@ class PersonaControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Persona> response = personaController.cambiarRol("correo", Rol.CONSERJE.getRol(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarRol("correo", List.of(Rol.CONSERJE.getRol()), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -106,7 +102,7 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        ResponseEntity<Persona> response = personaController.cambiarRol("correo", Rol.CONSERJE.getRol(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarRol("correo", List.of(Rol.CONSERJE.getRol()), "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -127,9 +123,7 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Persona> response = personaController.cambiarRol("correo", Rol.CONSERJE.getRol(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarRol("correo", List.of(Rol.CONSERJE.getRol()), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -150,9 +144,7 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Persona> response = personaController.cambiarRol("correo", null, "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarRol("correo", null, "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -173,9 +165,7 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(persona, response.getBody());
@@ -191,7 +181,7 @@ class PersonaControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -207,7 +197,7 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -228,32 +218,7 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
-
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
-    }
-
-    @Test
-    public void shouldReturn400WhenRolIsNullCambiarDepartamento() {
-        Optional adminOptional = mock(Optional.class);
-        Optional personaOptional = mock(Optional.class);
-
-        when(personaService.getPersonaById("correo")).thenReturn(personaOptional);
-        when(personaService.getPersonaById("admin")).thenReturn(adminOptional);
-
-        when(personaOptional.isEmpty()).thenReturn(false);
-        when(personaOptional.get()).thenReturn(persona);
-
-        when(adminOptional.isEmpty()).thenReturn(false);
-        when(adminOptional.get()).thenReturn(admin);
-
-        when(admin.isAdmin()).thenReturn(true);
-
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", null, "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.cambiarDepartamento("correo", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -270,10 +235,14 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
+        CreateUser createUser = new CreateUser();
+        createUser.setCorreo("correo");
+        createUser.setNombre("usuario");
+        createUser.setDepartamento(null);
+        createUser.setRoles(List.of(Rol.GERENTE.getRol()));
 
 
-        ResponseEntity<Persona> response = personaController.anyadirPersona("usuario", "correo", null, List.of(Rol.GERENTE.getRol()), "Bearer tokenAdmin");
+        ResponseEntity<Persona> response = personaController.anyadirPersona(createUser, "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
@@ -289,7 +258,13 @@ class PersonaControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Persona> response = personaController.anyadirPersona("usuario", "correo", null, List.of(Rol.GERENTE.getRol()), "Bearer tokenAdmin");
+        CreateUser createUser = new CreateUser();
+        createUser.setCorreo("correo");
+        createUser.setNombre("usuario");
+        createUser.setDepartamento(null);
+        createUser.setRoles(List.of(Rol.GERENTE.getRol()));
+
+        ResponseEntity<Persona> response = personaController.anyadirPersona(createUser, "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -305,7 +280,13 @@ class PersonaControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        ResponseEntity<Persona> response = personaController.anyadirPersona("usuario", "correo", null, List.of(Rol.GERENTE.getRol()), "Bearer tokenAdmin");
+        CreateUser createUser = new CreateUser();
+        createUser.setCorreo("correo");
+        createUser.setNombre("usuario");
+        createUser.setDepartamento(null);
+        createUser.setRoles(List.of(Rol.GERENTE.getRol()));
+
+        ResponseEntity<Persona> response = personaController.anyadirPersona(createUser, "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }

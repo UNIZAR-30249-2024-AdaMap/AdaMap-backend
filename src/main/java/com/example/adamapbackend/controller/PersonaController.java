@@ -69,7 +69,7 @@ public class PersonaController {
         if (!admin.get().isAdmin())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        List<Rol> rolesNuevos = roles.stream().map(Rol::of).toList();
+        List<Rol> rolesNuevos = roles == null ? List.of() : roles.stream().map(Rol::of).toList();
         Optional<Persona> persona = personaService.getPersonaById(correo);
 
         if (persona.isEmpty() || rolesNuevos.isEmpty())
@@ -128,7 +128,7 @@ public class PersonaController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Departamento departamentoNuevo = Departamento.of(usuario.getDepartamento());
-        
+
         List<Rol> rolList = usuario.getRoles().stream().map(Rol::of).toList();
 
         Persona persona = new Persona(usuario.getCorreo(), usuario.getNombre(), departamentoNuevo, rolList);

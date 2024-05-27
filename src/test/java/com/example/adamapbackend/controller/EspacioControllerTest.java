@@ -90,7 +90,7 @@ class EspacioControllerTest {
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -106,7 +106,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -123,7 +123,7 @@ class EspacioControllerTest {
         when(admin.isAdmin()).thenReturn(false);
 
 
-        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -145,7 +145,7 @@ class EspacioControllerTest {
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarReservabilidad("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -167,7 +167,7 @@ class EspacioControllerTest {
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -183,7 +183,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -200,7 +200,7 @@ class EspacioControllerTest {
         when(admin.isAdmin()).thenReturn(false);
 
 
-        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -222,7 +222,7 @@ class EspacioControllerTest {
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarCategoria("idEspacio", TipoEspacio.AULA.getTipoEspacio(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -244,7 +244,7 @@ class EspacioControllerTest {
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -260,7 +260,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -277,7 +277,7 @@ class EspacioControllerTest {
         when(admin.isAdmin()).thenReturn(false);
 
 
-        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -299,7 +299,7 @@ class EspacioControllerTest {
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarHorario("idEspacio", new Horario(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -321,7 +321,7 @@ class EspacioControllerTest {
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -337,7 +337,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -354,7 +354,7 @@ class EspacioControllerTest {
         when(admin.isAdmin()).thenReturn(false);
 
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -376,7 +376,7 @@ class EspacioControllerTest {
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioENIA("idEspacio", "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -398,7 +398,7 @@ class EspacioControllerTest {
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -414,7 +414,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -431,7 +431,7 @@ class EspacioControllerTest {
         when(admin.isAdmin()).thenReturn(false);
 
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -453,7 +453,7 @@ class EspacioControllerTest {
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioDepartamento("idEspacio", Departamento.DIIS.getDepartamento(), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -479,7 +479,7 @@ class EspacioControllerTest {
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -495,7 +495,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -511,9 +511,7 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -531,12 +529,10 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPropietarioPersonas("idEspacio", List.of("correo"), "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -557,13 +553,11 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(false);
         when(espacioOptional.get()).thenReturn(espacio);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer admin");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(espacio, response.getBody());
@@ -579,7 +573,7 @@ class EspacioControllerTest {
 
         when(adminOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
@@ -595,9 +589,7 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(false);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
-        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer admin");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
@@ -615,12 +607,10 @@ class EspacioControllerTest {
 
         when(admin.isAdmin()).thenReturn(true);
 
-        when(tokenParser.extractEmail(any())).thenReturn("admin");
-
         when(espacioService.getEspacioById(any())).thenReturn(espacioOptional);
         when(espacioOptional.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer tokenAdmin");
+        ResponseEntity<Espacio> response = espacioController.cambiarPorcentajeUso("idEspacio", 100, "Bearer admin");
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
